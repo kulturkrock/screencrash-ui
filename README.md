@@ -52,10 +52,8 @@ The easiest way to get started should be to run `make dev`, which will
 | `tsconfig.json` | TypeScript configuration for the project.
 | `webpack.config.js` | Configuration for `webpack` that describes how to build the project.
 | `browser-sync.config.js` | Configuration for `browser-sync` which describes how to serve the project.
-|
 | `src/` | Source code, compiled by `webpack` using the build commands described above.
 | `src/tsx/main.tsx` | The main entry point of the project.
 | `dist/` | "Distribution," i.e., where the project is built to and served from. This contains static files (in particular, `index.html`) that are not managed by `webpack`.
-|
 | `dist/webpack/` | Where `webpack` is configured to put all compilation output, and is ignored by `git`. Deleting this folder is equivalent to cleaning the build.
 | `node_modules` | Where `npm` puts dependencies it installs, and is ignored by `git`.
