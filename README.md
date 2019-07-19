@@ -26,11 +26,11 @@ When using `make`, installing of dependencies will be done automatically and `ma
 | Using `make` | Using `npm` |   |
 |--------------|-------------|---|
 | `make` | | Running make without arguments is equivalent to `make build` |
-| `make init` | `npm install` | Install dependencies |
-| `make build` | `npm run build` | Build the project |
-| `make watch` | `npm run watch` | Build, and then watch for changes in the source and rebuild as needed |
-| `make serve` | `npm run serve` | Start a [browser-sync](https://www.browsersync.io/) server and open a new browser tab or window to it using the system's default web browser |
-| `make dev` | `npm run dev` | Run `make watch` and `make serve` in parallel, providing automatic rebuild on changes and automatic reload in the browser |
+| <code>make&nbsp;init</code> | <code>npm&nbsp;install</code> | Install dependencies |
+| <code>make&nbsp;build</code> | <code>npm&nbsp;run&nbsp;build</code> | Build the project |
+| <code>make&nbsp;watch</code> | <code>npm&nbsp;run&nbsp;watch</code> | Build, and then watch for changes in the source and rebuild as needed |
+| <code>make&nbsp;serve</code> | <code>npm&nbsp;run&nbsp;serve</code> | Start a [browser-sync](https://www.browsersync.io/) server and open a new browser tab or window to it using the system's default web browser |
+| <code>make&nbsp;dev</code> | <code>npm&nbsp;run&nbsp;dev</code> | Run `make watch` and `make serve` in parallel, providing automatic rebuild on changes and automatic reload in the browser |
 
 The easiest way to get started should be to run `make dev`, which will 
  1. install dependencies,
