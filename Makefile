@@ -3,7 +3,7 @@
 
 default: build
 
-init: package.json
+init:
 	npm install
 
 build: init
