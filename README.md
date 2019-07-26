@@ -9,8 +9,8 @@ Repository for the UI of Screencrash (also known as Skärmkrock)
 
 
 ## Dependencies
-The primary dependency for this repository is [Node.js](https://nodejs.org/) 10.16.0 which needs to be installed and accessible.
-To install a specific version, you can use [NVM](https://github.com/nvm-sh/nvm).
+The primary dependency for this repository is [Node.js](https://nodejs.org/) 10.16.0 which needs to be installed and accessible. (Downloads can be found [here](https://nodejs.org/dist/v10.16.0/), in case the previous link leads to a newer version.)
+To manage Node versions on Mac or Linux, you can also use [NVM](https://github.com/nvm-sh/nvm).
 
 In particular, whatever editor or command line you wish to use needs to be able to run `npm`, which will manage the code and development dependencies.
 
