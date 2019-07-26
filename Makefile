@@ -4,7 +4,7 @@
 default: build
 
 init:
-	npm install
+	npm ci
 
 build: init
 	npm run build
