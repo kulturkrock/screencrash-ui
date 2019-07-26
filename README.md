@@ -9,7 +9,8 @@ Repository for the UI of Screencrash (also known as Skärmkrock)
 
 
 ## Dependencies
-The primary dependency for this repository is [Node.js](https://nodejs.org/) which needs to be installed and accessible.
+The primary dependency for this repository is [Node.js](https://nodejs.org/) 10.16.0 which needs to be installed and accessible. (Downloads can be found [here](https://nodejs.org/dist/v10.16.0/), in case the previous link leads to a newer version.)
+To manage Node versions on Mac or Linux, you can also use [NVM](https://github.com/nvm-sh/nvm).
 
 In particular, whatever editor or command line you wish to use needs to be able to run `npm`, which will manage the code and development dependencies.
 
@@ -21,12 +22,12 @@ An optional dependency on GNU Make exists, in that a simple `Makefile` is provid
 
 The following commands are available, and should be run from the repository root folder (same folder as the `Makefile` and `package.json`).
 
-When using `make`, installing of dependencies will be done automatically and `make init` should not need to be run manually. However, when only using `npm` then `npm install` must be run first in order to install the dependencies for the other commands.
+When using `make`, installing of dependencies will be done automatically and `make init` should not need to be run manually. However, when only using `npm` then `npm ci` must be run first in order to install the dependencies for the other commands.
 
 | Using `make` | Using `npm` |   |
 |--------------|-------------|---|
 | `make` | | Running make without arguments is equivalent to `make build` |
-| <code>make&nbsp;init</code> | <code>npm&nbsp;install</code> | Install dependencies |
+| <code>make&nbsp;init</code> | <code>npm&nbsp;ci</code> | Install dependencies |
 | <code>make&nbsp;build</code> | <code>npm&nbsp;run&nbsp;build</code> | Build the project |
 | <code>make&nbsp;watch</code> | <code>npm&nbsp;run&nbsp;watch</code> | Build, and then watch for changes in the source and rebuild as needed |
 | <code>make&nbsp;serve</code> | <code>npm&nbsp;run&nbsp;serve</code> | Start a [browser-sync](https://www.browsersync.io/) server and open a new browser tab or window to it using the system's default web browser |
@@ -48,7 +49,8 @@ The easiest way to get started should be to run `make dev`, which will
 | `README.md` | This file. Hi!
 | `LICENSE` | License text.
 | `Makefile` | Makefile, containing the commands described above.
-| `package.json` | Node.js package file, describing the `npm` commands above and all dependencies.
+| `package.json` | Node.js package file, describing the `npm` commands above and all direct dependencies.
+| `package-lock.json` | Used by `npm` to specify the exact versions of all dependencies. No need to edit this manually.
 | `tsconfig.json` | TypeScript configuration for the project.
 | `webpack.config.js` | Configuration for `webpack` that describes how to build the project.
 | `browser-sync.config.js` | Configuration for `browser-sync` which describes how to serve the project.
