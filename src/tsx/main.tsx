@@ -1,10 +1,7 @@
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { LiveScreen } from "./liveScreen";
 
-import '../less/main.less';
+import "../less/main.less";
 
-console.log("Hello world!");
-
-console.log(React);
-console.log(ReactDOM);
+ReactDOM.render(<LiveScreen />, document.getElementById("super-container"));
