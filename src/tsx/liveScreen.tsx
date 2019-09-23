@@ -29,7 +29,7 @@ class LiveScreen extends React.PureComponent<{}, IState> {
   }
 
   private handleKey(event: KeyboardEvent) {
-    if (event.key === " ") {
+    if (event.key === " " && !event.repeat) {
       this.setState({ times: this.state.times + 1 });
     }
   }
