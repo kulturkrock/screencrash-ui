@@ -26,7 +26,23 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                loaders: ['style-loader', 'css-loader', 'less-loader']
+                use: [
+                    {
+                        loader: "style-loader"
+                    },
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: {
+                                localIdentRegExp:"([^/\\\\]*).module.less",
+                                localIdentName: '[1]__[local]',
+                              },
+                        }
+                    },
+                    {
+                        loader: "less-loader"
+                    }
+                ]
             }
         ]
     },

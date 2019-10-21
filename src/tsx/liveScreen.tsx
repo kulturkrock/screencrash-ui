@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import style from "../less/liveScreen.module.less";
+
 interface IState {
   times: number;
 }
@@ -21,10 +23,10 @@ class LiveScreen extends React.PureComponent<{}, IState> {
 
   public render() {
     return (
-      <section>
+      <div className={style.screen}>
         <h1>Nu spelar vi upp en föreställning!</h1>
         <div>Du har tryckt mellanslag {this.state.times} gånger.</div>
-      </section>
+      </div>
     );
   }
 
