@@ -1,10 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { DummyCoreConnection } from "./coreConnection";
 import { LiveScreen } from "./liveScreen";
 
 import style from "../less/main.module.less";
 
-const liveScreen = <LiveScreen/>;
+
+const coreConnection = new DummyCoreConnection();
+const liveScreen = <LiveScreen coreConnection={coreConnection}/>;
 
 ReactDOM.render(
     <div className={style.gridContainer}>

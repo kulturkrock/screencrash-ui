@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ICoreConnection } from "./coreConnection";
 
 import style from "../less/liveScreen.module.less";
 
@@ -6,11 +7,12 @@ interface IState {
   times: number;
 }
 
-class LiveScreen extends React.PureComponent<{}, IState> {
-  constructor(props: {}) {
+class LiveScreen extends React.PureComponent<{coreConnection: ICoreConnection}, IState> {
+  constructor(props: {coreConnection: ICoreConnection}) {
     super(props);
     this.state = { times: 0 };
     this.handleKey = this.handleKey.bind(this);
+    this.registerCallbacks();
   }
 
   public componentDidMount() {
@@ -30,9 +32,15 @@ class LiveScreen extends React.PureComponent<{}, IState> {
     );
   }
 
+  private registerCallbacks() {
+    this.props.coreConnection.onIncrement(() => {
+      this.setState({ times: this.state.times + 1 });
+    });
+  }
+
   private handleKey(event: KeyboardEvent) {
     if (event.key === " " && !event.repeat) {
-      this.setState({ times: this.state.times + 1 });
+      this.props.coreConnection.askForIncrement();
     }
   }
 }
