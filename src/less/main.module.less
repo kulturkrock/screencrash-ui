@@ -1,0 +1,26 @@
+.gridContainer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: grid;
+    height: 100%;
+    width: 100%;
+    grid-template-rows: 30px 1fr;
+}
+
+.header {
+    background: rgb(102, 31, 37);
+    color: wheat;
+    grid-row: 1;
+    grid-column: 1;
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.screen {
+    grid-column: 1;
+    grid-row: 2;
+}

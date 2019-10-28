@@ -3,9 +3,18 @@ import * as ReactDOM from "react-dom";
 import { DummyCoreConnection } from "./coreConnection";
 import { LiveScreen } from "./liveScreen";
 
-import "../less/main.less";
+import style from "../less/main.module.less";
+
 
 const coreConnection = new DummyCoreConnection();
 const liveScreen = <LiveScreen coreConnection={coreConnection}/>;
 
-ReactDOM.render(liveScreen, document.getElementById("super-container"));
+ReactDOM.render(
+    <div className={style.gridContainer}>
+        <div className={style.header}>
+            <div>Mode: Live</div>
+            <div>Placeholder</div>
+        </div>
+        <div className={style.screen}>{liveScreen}</div>
+    </div>,
+    document.getElementById("super-container"));
