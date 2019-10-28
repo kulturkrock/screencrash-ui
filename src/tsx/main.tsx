@@ -1,20 +1,57 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { DummyCoreConnection } from "./coreConnection";
+import { DummyCoreConnection, ICoreConnection } from "./coreConnection";
 import { LiveScreen } from "./liveScreen";
 
 import style from "../less/main.module.less";
 
+interface IState {
+  coreAddress: string;
+  coreConnection: ICoreConnection;
+}
 
-const coreConnection = new DummyCoreConnection();
-const liveScreen = <LiveScreen coreConnection={coreConnection}/>;
+class Main extends React.PureComponent<{}, IState> {
+  constructor(props: {}) {
+    super(props);
+    const queryParams = new URLSearchParams(window.location.search);
+    const coreAddress = queryParams.get("core");
+    this.state = {
+      coreAddress,
+      coreConnection: this.getCoreConnection(coreAddress),
+    };
+  }
 
-ReactDOM.render(
-    <div className={style.gridContainer}>
+  public render() {
+    return (
+      <div className={style.gridContainer}>
         <div className={style.header}>
-            <div>Mode: Live</div>
-            <div>Placeholder</div>
+          <div>Mode: Live</div>
+          <div>
+            <form>
+              <label>Core: </label>
+              <input
+                type="text"
+                name="core"
+                defaultValue={this.state.coreAddress}
+              />
+            </form>
+          </div>
         </div>
-        <div className={style.screen}>{liveScreen}</div>
-    </div>,
-    document.getElementById("super-container"));
+        <div className={style.screen}>
+          <LiveScreen coreConnection={this.state.coreConnection} />
+        </div>
+      </div>
+    );
+  }
+
+  private getCoreConnection(address: string) {
+    if (address === "fake") {
+      return new DummyCoreConnection(address);
+    } else {
+      // The real core connection will be here later
+      return new DummyCoreConnection(address);
+    }
+  }
+}
+
+ReactDOM.render(<Main />, document.getElementById("super-container"));

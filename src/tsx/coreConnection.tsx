@@ -21,6 +21,10 @@ interface ICoreConnection {
 class DummyCoreConnection implements ICoreConnection {
   private increment: () => void;
 
+  // We only use the address in the real core connection
+  // tslint:disable-next-line no-empty
+  constructor(address: string) { }
+
   public askForIncrement() {
     if (this.increment) {
       setTimeout(this.increment, 1000);
