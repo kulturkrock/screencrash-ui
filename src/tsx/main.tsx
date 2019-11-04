@@ -29,7 +29,7 @@ class Main extends React.PureComponent<{}, IState> {
           <div>
             <form>
               <label>Core: </label>
-              <input
+              <input className={style.addressInput} autoComplete="off"
                 type="text"
                 name="core"
                 defaultValue={this.state.coreAddress}
