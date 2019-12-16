@@ -7,8 +7,8 @@ interface IState {
   times: number;
 }
 
-class LiveScreen extends React.PureComponent<{coreConnection: ICoreConnection}, IState> {
-  constructor(props: {coreConnection: ICoreConnection}) {
+class LiveScreen extends React.PureComponent<{ coreConnection: ICoreConnection }, IState> {
+  constructor(props: { coreConnection: ICoreConnection }) {
     super(props);
     this.state = { times: 0 };
     this.handleKey = this.handleKey.bind(this);
@@ -39,8 +39,11 @@ class LiveScreen extends React.PureComponent<{coreConnection: ICoreConnection}, 
   }
 
   private handleKey(event: KeyboardEvent) {
-    if (event.key === " " && !event.repeat) {
-      this.props.coreConnection.askForIncrement();
+    // Only accept keyboard shortcuts on first press and when nothing is focused
+    if (document.activeElement === document.body && !event.repeat) {
+      if (event.key === " ") {
+        this.props.coreConnection.askForIncrement();
+      }
     }
   }
 }
