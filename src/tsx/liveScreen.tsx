@@ -1,5 +1,8 @@
 import * as React from "react";
 import { ICoreConnection } from "./coreConnection";
+import { PdfViewer } from "./pdfViewer";
+import { StatusView } from "./statusView";
+import { Timeline } from "./timeline";
 
 import style from "../less/liveScreen.module.less";
 
@@ -26,8 +29,9 @@ class LiveScreen extends React.PureComponent<{ coreConnection: ICoreConnection }
   public render() {
     return (
       <div className={style.screen}>
-        <h1>Nu spelar vi upp en föreställning!</h1>
-        <div>Du har tryckt mellanslag {this.state.times} gånger.</div>
+        <StatusView/>
+        <Timeline/>
+        <PdfViewer/>
       </div>
     );
   }
