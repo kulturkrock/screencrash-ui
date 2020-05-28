@@ -14,7 +14,7 @@ class PdfViewer extends React.PureComponent<{}, IState> {
 
   public render() {
     return (
-      <div className={style.borderBox}>
+      <div className={style.container}>
           <div className={style.textArea}>{this.state.text}</div>
       </div>
     );
