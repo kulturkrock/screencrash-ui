@@ -37,7 +37,7 @@ class LiveScreen extends React.PureComponent<{ coreConnection: ICoreConnection }
   }
 
   private registerCallbacks() {
-    this.props.coreConnection.onIncrement(() => {
+    this.props.coreConnection.addEventListener("increment", () => {
       this.setState({ times: this.state.times + 1 });
     });
   }
