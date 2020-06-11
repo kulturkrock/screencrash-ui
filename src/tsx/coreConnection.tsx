@@ -1,38 +1,31 @@
 /**
  * This class handles the communication with the core.
- * The user registers callbacks to be executed when the
- * core sends a message, and calls methods directly to
- * send a message to the core.
+ * The user calls methods directly to
+ * send a message to the core, and can register for events.
  */
-interface ICoreConnection {
+interface ICoreConnection extends EventTarget {
   // UI-initiated actions
   /** Example of UI-initiated action */
   askForIncrement(): void;
 
-  // Callbacks for core-initiated actions
-  /** Example of core-initiated action */
-  onIncrement(callback: () => void): void;
+  // Events
+  addEventListener(event: "increment", listener: () => void): void;
 }
 
 /**
  * This is a dummy implementation of a connection
  * to the core, for use in development.
  */
-class DummyCoreConnection implements ICoreConnection {
-  private increment: () => void;
+class DummyCoreConnection extends EventTarget implements ICoreConnection {
 
   // We only use the address in the real core connection
   // tslint:disable-next-line no-empty
-  constructor(address: string) { }
-
-  public askForIncrement() {
-    if (this.increment) {
-      setTimeout(this.increment, 1000);
-    }
+  constructor(address: string) {
+    super();
   }
 
-  public onIncrement(callback: () => void) {
-    this.increment = callback;
+  public askForIncrement() {
+    setTimeout(() => this.dispatchEvent(new Event("increment")), 1000);
   }
 }
 
