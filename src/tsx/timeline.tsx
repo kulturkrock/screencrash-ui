@@ -1,21 +1,21 @@
 import * as React from "react";
 
 import style from "../less/timeline.module.less";
+import { INodeCollection } from "./types";
 
-interface IState {
-    text: string;
-}
-
-class Timeline extends React.PureComponent<{}, IState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = { text: "Jag är en tidslinje" };
-  }
+class Timeline extends React.PureComponent<{nodes: INodeCollection, currentNode: string}, {}> {
 
   public render() {
     return (
       <div className={style.container}>
-          <div className={style.textArea}>{this.state.text}</div>
+        {Object.entries(this.props.nodes).map(
+          ([key, node]) => {
+            let classes = style.textArea;
+            if (key === this.props.currentNode) {
+              classes = `${classes} ${style.selectedText}`;
+            }
+            return <div key={key} className={classes}>{node.prompt}</div>;
+          })}
       </div>
     );
   }

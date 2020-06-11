@@ -1,3 +1,5 @@
+import { INodeCollection } from "./types";
+
 /**
  * This class handles the communication with the core.
  * The user calls methods directly to
@@ -5,11 +7,14 @@
  */
 interface ICoreConnection extends EventTarget {
   // UI-initiated actions
-  /** Example of UI-initiated action */
-  askForIncrement(): void;
+  handshake(): void;
+  nextNode(): void;
 
   // Events
-  addEventListener(event: "increment", listener: () => void): void;
+  addEventListener(event: "nodes",
+                   listener: (event: CustomEvent<INodeCollection>) => void): void;
+  addEventListener(event: "current-node",
+                   listener: (event: CustomEvent<string>) => void): void;
 }
 
 /**
@@ -17,15 +22,28 @@ interface ICoreConnection extends EventTarget {
  * to the core, for use in development.
  */
 class DummyCoreConnection extends EventTarget implements ICoreConnection {
+  private nodes: INodeCollection;
+  private currentNode: string;
 
   // We only use the address in the real core connection
-  // tslint:disable-next-line no-empty
   constructor(address: string) {
     super();
+    this.nodes = {
+      a: {next: "b", prompt: "Välkommen till Kulturkrocks senaste föreställning!"},
+      b: {next: "c", prompt: "Jag ser att ni fortfarande är på väg in."},
+      c: {next: "a", prompt: "Några av er kanske missade det, så jag säger det igen:"},
+    };
+    this.currentNode = "a";
   }
 
-  public askForIncrement() {
-    setTimeout(() => this.dispatchEvent(new Event("increment")), 1000);
+  public handshake() {
+    this.dispatchEvent(new CustomEvent("nodes", {detail: this.nodes}));
+    this.dispatchEvent(new CustomEvent("current-node", {detail: this.currentNode}));
+  }
+
+  public nextNode() {
+    this.currentNode = this.nodes[this.currentNode].next;
+    this.dispatchEvent(new CustomEvent("current-node", {detail: this.currentNode}));
   }
 }
 
