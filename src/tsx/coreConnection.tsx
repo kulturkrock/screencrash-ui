@@ -11,10 +11,14 @@ interface ICoreConnection extends EventTarget {
   nextNode(): void;
 
   // Events
-  addEventListener(event: "nodes",
-                   listener: (event: CustomEvent<INodeCollection>) => void): void;
-  addEventListener(event: "current-node",
-                   listener: (event: CustomEvent<string>) => void): void;
+  addEventListener(
+    event: "nodes",
+    listener: (event: CustomEvent<INodeCollection>) => void,
+  ): void;
+  addEventListener(
+    event: "current-node",
+    listener: (event: CustomEvent<string>) => void,
+  ): void;
 }
 
 /**
@@ -26,24 +30,35 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private currentNode: string;
 
   // We only use the address in the real core connection
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(address: string) {
     super();
     this.nodes = {
-      a: {next: "b", prompt: "Välkommen till Kulturkrocks senaste föreställning!"},
-      b: {next: "c", prompt: "Jag ser att ni fortfarande är på väg in."},
-      c: {next: "a", prompt: "Några av er kanske missade det, så jag säger det igen:"},
+      a: {
+        next: "b",
+        prompt: "Välkommen till Kulturkrocks senaste föreställning!",
+      },
+      b: { next: "c", prompt: "Jag ser att ni fortfarande är på väg in." },
+      c: {
+        next: "a",
+        prompt: "Några av er kanske missade det, så jag säger det igen:",
+      },
     };
     this.currentNode = "a";
   }
 
-  public handshake() {
-    this.dispatchEvent(new CustomEvent("nodes", {detail: this.nodes}));
-    this.dispatchEvent(new CustomEvent("current-node", {detail: this.currentNode}));
+  public handshake(): void {
+    this.dispatchEvent(new CustomEvent("nodes", { detail: this.nodes }));
+    this.dispatchEvent(
+      new CustomEvent("current-node", { detail: this.currentNode }),
+    );
   }
 
-  public nextNode() {
+  public nextNode(): void {
     this.currentNode = this.nodes[this.currentNode].next;
-    this.dispatchEvent(new CustomEvent("current-node", {detail: this.currentNode}));
+    this.dispatchEvent(
+      new CustomEvent("current-node", { detail: this.currentNode }),
+    );
   }
 }
 

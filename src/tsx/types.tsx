@@ -4,7 +4,10 @@ interface INode {
 }
 
 interface INodeCollection {
-    [index: string]: INode;
+  [index: string]: INode;
 }
 
-export { INode, INodeCollection };
+// Empty object, since there is no built-in for it
+type IEmpty = Record<never, never>;
+
+export { INode, INodeCollection, IEmpty };
