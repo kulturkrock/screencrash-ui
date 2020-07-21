@@ -1,5 +1,7 @@
 import { INodeCollection } from "./types";
 
+const eventNames = {nodes: "nodes", currentNode: "current-node"}
+
 /**
  * This class handles the communication with the core.
  * The user calls methods directly to
@@ -37,13 +39,13 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   }
 
   public handshake() {
-    this.dispatchEvent(new CustomEvent("nodes", {detail: this.nodes}));
-    this.dispatchEvent(new CustomEvent("current-node", {detail: this.currentNode}));
+    this.dispatchEvent(new CustomEvent(eventNames.nodes, {detail: this.nodes}));
+    this.dispatchEvent(new CustomEvent(eventNames.currentNode, {detail: this.currentNode}));
   }
 
   public nextNode() {
     this.currentNode = this.nodes[this.currentNode].next;
-    this.dispatchEvent(new CustomEvent("current-node", {detail: this.currentNode}));
+    this.dispatchEvent(new CustomEvent(eventNames.currentNode, {detail: this.currentNode}));
   }
 }
 
