@@ -3,22 +3,24 @@ import { ICoreConnection } from "./coreConnection";
 import { PdfViewer } from "./pdfViewer";
 import { StatusView } from "./statusView";
 import { Timeline } from "./timeline";
+import { INodeCollection } from "./types";
 
 import style from "../less/liveScreen.module.less";
 
 interface IState {
-  times: number;
+  nodes: INodeCollection;
+  currentNode: string;
 }
 
 class LiveScreen extends React.PureComponent<{ coreConnection: ICoreConnection }, IState> {
   constructor(props: { coreConnection: ICoreConnection }) {
     super(props);
-    this.state = { times: 0 };
+    this.state = { nodes: {}, currentNode: null };
     this.handleKey = this.handleKey.bind(this);
-    this.registerCallbacks();
   }
 
   public componentDidMount() {
+    this.initConnection();
     document.addEventListener("keydown", this.handleKey);
   }
 
@@ -30,23 +32,28 @@ class LiveScreen extends React.PureComponent<{ coreConnection: ICoreConnection }
     return (
       <div className={style.screen}>
         <StatusView/>
-        <Timeline/>
+        <Timeline nodes={this.state.nodes} currentNode={this.state.currentNode}/>
         <PdfViewer/>
       </div>
     );
   }
 
-  private registerCallbacks() {
-    this.props.coreConnection.addEventListener("increment", () => {
-      this.setState({ times: this.state.times + 1 });
+  private initConnection() {
+    this.props.coreConnection.addEventListener("nodes", (event) => {
+      this.setState({ nodes: event.detail });
     });
+    this.props.coreConnection.addEventListener("current-node", (event) => {
+      this.setState({ currentNode: event.detail });
+    });
+
+    this.props.coreConnection.handshake();
   }
 
   private handleKey(event: KeyboardEvent) {
     // Only accept keyboard shortcuts on first press and when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
       if (event.key === " ") {
-        this.props.coreConnection.askForIncrement();
+        this.props.coreConnection.nextNode();
       }
     }
   }

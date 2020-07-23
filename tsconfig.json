@@ -2,8 +2,8 @@
     "compilerOptions": {
         "outDir": "./build/tsx",
         "noImplicitAny": true,
-        "module": "es6",
-        "target": "es6",
+        "module": "esnext",
+        "target": "esnext",
         "jsx": "react",
         "allowJs": true,
         "sourceMap": true
