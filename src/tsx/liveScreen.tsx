@@ -12,28 +12,34 @@ interface IState {
   currentNode: string;
 }
 
-class LiveScreen extends React.PureComponent<{ coreConnection: ICoreConnection }, IState> {
+class LiveScreen extends React.PureComponent<
+  { coreConnection: ICoreConnection },
+  IState
+> {
   constructor(props: { coreConnection: ICoreConnection }) {
     super(props);
     this.state = { nodes: {}, currentNode: null };
     this.handleKey = this.handleKey.bind(this);
   }
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     this.initConnection();
     document.addEventListener("keydown", this.handleKey);
   }
 
-  public componentWillUnmount() {
+  public componentWillUnmount(): void {
     document.removeEventListener("keydown", this.handleKey);
   }
 
-  public render() {
+  public render(): JSX.Element {
     return (
       <div className={style.screen}>
-        <StatusView/>
-        <Timeline nodes={this.state.nodes} currentNode={this.state.currentNode}/>
-        <PdfViewer/>
+        <StatusView />
+        <Timeline
+          nodes={this.state.nodes}
+          currentNode={this.state.currentNode}
+        />
+        <PdfViewer />
       </div>
     );
   }

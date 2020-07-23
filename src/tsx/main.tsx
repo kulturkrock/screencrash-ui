@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+
 import { DummyCoreConnection, ICoreConnection } from "./coreConnection";
 import { LiveScreen } from "./liveScreen";
-
+import { IEmpty } from "./types";
 import style from "../less/main.module.less";
 
 interface IState {
@@ -10,8 +11,8 @@ interface IState {
   coreConnection: ICoreConnection;
 }
 
-class Main extends React.PureComponent<{}, IState> {
-  constructor(props: {}) {
+class Main extends React.PureComponent<IEmpty, IState> {
+  constructor(props: IEmpty) {
     super(props);
     const queryParams = new URLSearchParams(window.location.search);
     const coreAddress = queryParams.get("core");
@@ -29,7 +30,9 @@ class Main extends React.PureComponent<{}, IState> {
           <div>
             <form>
               <label>Core: </label>
-              <input className={style.addressInput} autoComplete="off"
+              <input
+                className={style.addressInput}
+                autoComplete="off"
                 type="text"
                 name="core"
                 defaultValue={this.state.coreAddress}
