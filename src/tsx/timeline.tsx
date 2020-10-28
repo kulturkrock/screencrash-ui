@@ -10,7 +10,7 @@ const NODE_RADIUS = 5;
 
 interface IProps {
   nodes: INodeCollection;
-  currentNode: string;
+  history: string[];
 }
 
 class Timeline extends React.PureComponent<IProps, { id: string }> {
@@ -22,14 +22,15 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
   }
 
   public componentDidMount(): void {
-    this.updateTimeline(this.props.nodes, this.props.currentNode);
+    this.updateTimeline(this.props.nodes, this.props.history);
   }
 
   public componentDidUpdate(): void {
-    this.updateTimeline(this.props.nodes, this.props.currentNode);
+    this.updateTimeline(this.props.nodes, this.props.history);
   }
 
-  public updateTimeline(nodes: INodeCollection, currentNode: string): void {
+  public updateTimeline(nodes: INodeCollection, history: string[]): void {
+    const currentNode = history[history.length - 1];
     const visibleNodes = Object.entries(nodes).map(([id, node], index) => ({
       id,
       x: VIEWBOX_WIDTH / 2,

@@ -1,6 +1,6 @@
 import { INodeCollection } from "./types";
 
-const eventNames = { nodes: "nodes", currentNode: "current-node" };
+const eventNames = { nodes: "nodes", history: "history" };
 
 /**
  * This class handles the communication with the core.
@@ -18,8 +18,8 @@ interface ICoreConnection extends EventTarget {
     listener: (event: CustomEvent<INodeCollection>) => void,
   ): void;
   addEventListener(
-    event: "current-node",
-    listener: (event: CustomEvent<string>) => void,
+    event: "history",
+    listener: (event: CustomEvent<string[]>) => void,
   ): void;
 }
 
@@ -29,7 +29,7 @@ interface ICoreConnection extends EventTarget {
  */
 class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private nodes: INodeCollection;
-  private currentNode: string;
+  private history: string[];
 
   // We only use the address in the real core connection
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -46,7 +46,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
         prompt: "Några av er kanske missade det, så jag säger det igen:",
       },
     };
-    this.currentNode = "a";
+    this.history = ["a"];
   }
 
   public handshake(): void {
@@ -54,14 +54,19 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
       new CustomEvent(eventNames.nodes, { detail: this.nodes }),
     );
     this.dispatchEvent(
-      new CustomEvent(eventNames.currentNode, { detail: this.currentNode }),
+      new CustomEvent(eventNames.history, {
+        detail: this.history,
+      }),
     );
   }
 
   public nextNode(): void {
-    this.currentNode = this.nodes[this.currentNode].next;
+    const currentNodeId = this.history[this.history.length - 1];
+    this.history = [...this.history, this.nodes[currentNodeId].next];
     this.dispatchEvent(
-      new CustomEvent(eventNames.currentNode, { detail: this.currentNode }),
+      new CustomEvent(eventNames.history, {
+        detail: this.history,
+      }),
     );
   }
 }
