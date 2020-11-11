@@ -82,6 +82,7 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
         });
       }
     });
+    const transition = d3.transition().duration(300).ease(d3.easeQuadOut);
     // Draw the lines
     d3.select(`#${this.state.id}`)
       .select("svg")
@@ -97,12 +98,15 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
             .attr("y2", ({ endY }) => endY)
             .classed(style.line, true)
             .lower(),
-        (update) =>
+        (update) => {
           update
+            .transition(transition)
             .attr("x1", ({ startX }) => startX)
             .attr("y1", ({ startY }) => startY)
             .attr("x2", ({ endX }) => endX)
-            .attr("y2", ({ endY }) => endY),
+            .attr("y2", ({ endY }) => endY);
+          return update;
+        },
       );
     // Then draw the nodes
     d3.select(`#${this.state.id}`)
@@ -138,11 +142,13 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
         (update) => {
           update
             .select("circle")
+            .classed(style.currentNode, ({ tense }) => tense === "present")
+            .transition(transition)
             .attr("cx", ({ x }) => x)
-            .attr("cy", ({ y }) => y)
-            .classed(style.currentNode, ({ tense }) => tense === "present");
+            .attr("cy", ({ y }) => y);
           update
             .select("foreignObject")
+            .transition(transition)
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2);
           return update;
