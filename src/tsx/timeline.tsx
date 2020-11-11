@@ -54,22 +54,68 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
     }
 
     const nodesWithPosition = visibleNodes.map((node, index) => ({
-      // Construct a unique ID from the actual node ID and its distance from
-      // the starting point, to let d3 keep track of nodes between updates.
-      // We cannot use the actual ID since nodes can repeat.
-      // Once we can have branching paths, this may have to refined further.
-      uniqueId: `${node.id}:${
-        Math.max(history.length - NODES_BEFORE - 1, 0) + index
-      }`,
+      distanceFromStart: Math.max(history.length - NODES_BEFORE - 1, 0) + index,
       x: VIEWBOX_WIDTH / 2,
       y: NODE_SPACING / 2 + index * NODE_SPACING,
       ...node,
     }));
-
+    // Add lines between the nodes
+    const lines: {
+      id: string;
+      startX: number;
+      startY: number;
+      endX: number;
+      endY: number;
+    }[] = [];
+    nodesWithPosition.forEach((node) => {
+      const nextNode = nodesWithPosition.find(
+        ({ id, distanceFromStart }) =>
+          id === node.next && distanceFromStart === node.distanceFromStart + 1,
+      );
+      if (nextNode) {
+        lines.push({
+          id: `${node.id}:${node.distanceFromStart}-${nextNode.id}:${nextNode.distanceFromStart}`,
+          startX: node.x,
+          startY: node.y,
+          endX: nextNode.x,
+          endY: nextNode.y,
+        });
+      }
+    });
+    // Draw the lines
+    d3.select(`#${this.state.id}`)
+      .select("svg")
+      .selectAll("line")
+      .data(lines, ({ id }) => id)
+      .join(
+        (enter) =>
+          enter
+            .append("line")
+            .attr("x1", ({ startX }) => startX)
+            .attr("y1", ({ startY }) => startY)
+            .attr("x2", ({ endX }) => endX)
+            .attr("y2", ({ endY }) => endY)
+            .classed(style.line, true)
+            .lower(),
+        (update) =>
+          update
+            .attr("x1", ({ startX }) => startX)
+            .attr("y1", ({ startY }) => startY)
+            .attr("x2", ({ endX }) => endX)
+            .attr("y2", ({ endY }) => endY),
+      );
+    // Then draw the nodes
     d3.select(`#${this.state.id}`)
       .select("svg")
       .selectAll("g")
-      .data(nodesWithPosition, ({ uniqueId }) => uniqueId)
+      .data(
+        nodesWithPosition,
+        // Construct a unique ID from the actual node ID and its distance from
+        // the starting point, to let d3 keep track of nodes between updates.
+        // We cannot use the actual ID since nodes can repeat.
+        // Once we can have branching paths, this may have to refined further.
+        ({ id, distanceFromStart }) => `${id}:${distanceFromStart}`,
+      )
       .join(
         (enter) => {
           const g = enter.append("g");
