@@ -8,6 +8,9 @@ const VIEWBOX_WIDTH = 200;
 const NODE_SPACING = 30;
 const NODE_RADIUS = 5;
 
+const NODES_BEFORE = 3;
+const NODES_AFTER = 3;
+
 interface IProps {
   nodes: INodeCollection;
   history: string[];
@@ -30,17 +33,43 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
   }
 
   public updateTimeline(nodes: INodeCollection, history: string[]): void {
-    const currentNode = history[history.length - 1];
-    const visibleNodes = Object.entries(nodes).map(([id, node], index) => ({
-      id,
+    // Show the recent history
+    const visibleNodes = history
+      .slice(-NODES_BEFORE - 1, -1)
+      .map((id) => ({ id, tense: "past", ...nodes[id] }));
+
+    if (history.length > 0) {
+      // Show the current node
+      const currentId = history[history.length - 1];
+      visibleNodes.push({
+        id: currentId,
+        tense: "present",
+        ...nodes[currentId],
+      });
+      // Show a few nodes into the future
+      for (let step = 0; step < NODES_AFTER; step++) {
+        const nextId = visibleNodes[visibleNodes.length - 1].next;
+        visibleNodes.push({ id: nextId, tense: "future", ...nodes[nextId] });
+      }
+    }
+
+    const nodesWithPosition = visibleNodes.map((node, index) => ({
+      // Construct a unique ID from the actual node ID and its distance from
+      // the starting point, to let d3 keep track of nodes between updates.
+      // We cannot use the actual ID since nodes can repeat.
+      // Once we can have branching paths, this may have to refined further.
+      uniqueId: `${node.id}:${
+        Math.max(history.length - NODES_BEFORE - 1, 0) + index
+      }`,
       x: VIEWBOX_WIDTH / 2,
       y: NODE_SPACING / 2 + index * NODE_SPACING,
       ...node,
     }));
+
     d3.select(`#${this.state.id}`)
       .select("svg")
       .selectAll("g")
-      .data(visibleNodes, ({ id }) => id)
+      .data(nodesWithPosition, ({ uniqueId }) => uniqueId)
       .join(
         (enter) => {
           const g = enter.append("g");
@@ -49,7 +78,7 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
             .attr("cy", ({ y }) => y)
             .attr("r", NODE_RADIUS)
             .classed(style.node, true)
-            .classed(style.currentNode, ({ id }) => id === currentNode);
+            .classed(style.currentNode, ({ tense }) => tense === "present");
           g.append("foreignObject")
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2)
@@ -60,17 +89,25 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
             .text(({ prompt }) => prompt);
           return g;
         },
-        (update) =>
+        (update) => {
           update
             .select("circle")
-            .classed(style.currentNode, ({ id }) => id === currentNode),
+            .attr("cx", ({ x }) => x)
+            .attr("cy", ({ y }) => y)
+            .classed(style.currentNode, ({ tense }) => tense === "present");
+          update
+            .select("foreignObject")
+            .attr("x", ({ x }) => x + NODE_RADIUS)
+            .attr("y", ({ y }) => y - NODE_SPACING / 2);
+          return update;
+        },
       );
   }
 
   public render(): JSX.Element {
     return (
       <div className={style.container} id={this.state.id}>
-        <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 200`}></svg>
+        <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 350`}></svg>
       </div>
     );
   }
