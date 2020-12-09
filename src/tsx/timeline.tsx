@@ -52,11 +52,12 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
         visibleNodes.push({ id: nextId, tense: "future", ...nodes[nextId] });
       }
     }
-
+    const pastNodes = visibleNodes.filter(({ tense }) => tense === "past")
+      .length;
     const nodesWithPosition = visibleNodes.map((node, index) => ({
       distanceFromStart: Math.max(history.length - NODES_BEFORE - 1, 0) + index,
       x: VIEWBOX_WIDTH / 2,
-      y: NODE_SPACING / 2 + index * NODE_SPACING,
+      y: NODE_SPACING / 2 + (index + NODES_BEFORE - pastNodes) * NODE_SPACING,
       ...node,
     }));
     // Add lines between the nodes
