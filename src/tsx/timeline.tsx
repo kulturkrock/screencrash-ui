@@ -5,12 +5,17 @@ import { INodeCollection } from "./types";
 import style from "../less/timeline.module.less";
 
 const VIEWBOX_WIDTH = 200;
-const NODE_SPACING = 30;
+const VIEWBOX_HEIGHT = 360;
+const LEFT_MARGIN = 30;
+const TOP_MARGIN = -40;
+
+const NODE_SPACING = 40;
 const NODE_RADIUS = 5;
 
 const NODES_BEFORE = 3;
-const NODES_AFTER = 3;
-
+// Enough nodes after that the last is out of view
+const NODES_AFTER =
+  Math.round((VIEWBOX_HEIGHT - TOP_MARGIN) / NODE_SPACING) - NODES_BEFORE + 1;
 interface IProps {
   nodes: INodeCollection;
   history: string[];
@@ -56,8 +61,8 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
       .length;
     const nodesWithPosition = visibleNodes.map((node, index) => ({
       distanceFromStart: Math.max(history.length - NODES_BEFORE - 1, 0) + index,
-      x: VIEWBOX_WIDTH / 2,
-      y: NODE_SPACING / 2 + (index + NODES_BEFORE - pastNodes) * NODE_SPACING,
+      x: LEFT_MARGIN,
+      y: TOP_MARGIN + (index + NODES_BEFORE - pastNodes) * NODE_SPACING,
       ...node,
     }));
     // Add lines between the nodes
@@ -133,7 +138,7 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
           g.append("foreignObject")
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2)
-            .attr("width", VIEWBOX_WIDTH / 2 - NODE_RADIUS)
+            .attr("width", ({ x }) => VIEWBOX_WIDTH - x - NODE_RADIUS)
             .attr("height", NODE_SPACING)
             .append("xhtml:div")
             .classed(style.promptText, true)
@@ -160,7 +165,7 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
   public render(): JSX.Element {
     return (
       <div className={style.container} id={this.state.id}>
-        <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 350`}></svg>
+        <svg viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}></svg>
       </div>
     );
   }
