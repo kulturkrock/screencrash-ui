@@ -51,6 +51,14 @@ class LiveScreen extends React.PureComponent<
     this.props.coreConnection.addEventListener("current-node", (event) => {
       this.setState({ currentNode: event.detail });
     });
+    this.props.coreConnection.addEventListener("media-added", (event) => {
+      console.log("ADDED MEDIA:");
+      console.log(event.detail);
+    });
+    this.props.coreConnection.addEventListener("media-removed", (event) => {
+      console.log("REMOVED MEDIA:");
+      console.log(event.detail);
+    });
 
     this.props.coreConnection.handshake();
   }

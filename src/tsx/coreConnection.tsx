@@ -1,6 +1,17 @@
-import { INodeCollection } from "./types";
+import {
+  INodeCollection,
+  IMedia,
+  IMediaCollection,
+  IAudioMediaState,
+  IVideoMediaState,
+} from "./types";
 
-const eventNames = { nodes: "nodes", currentNode: "current-node" };
+const eventNames = {
+  nodes: "nodes",
+  currentNode: "current-node",
+  mediaAdded: "media-added",
+  mediaRemoved: "media-removed",
+};
 
 /**
  * This class handles the communication with the core.
@@ -21,6 +32,15 @@ interface ICoreConnection extends EventTarget {
     event: "current-node",
     listener: (event: CustomEvent<string>) => void,
   ): void;
+
+  addEventListener(
+    event: "media-added",
+    listener: (event: CustomEvent<IMedia>) => void,
+  ): void;
+  addEventListener(
+    event: "media-removed",
+    listener: (event: CustomEvent<IMedia>) => void,
+  ): void;
 }
 
 /**
@@ -30,6 +50,8 @@ interface ICoreConnection extends EventTarget {
 class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private nodes: INodeCollection;
   private currentNode: string;
+  private media: IMediaCollection;
+  private activeMedia: string[];
 
   // We only use the address in the real core connection
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,6 +69,39 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
       },
     };
     this.currentNode = "a";
+
+    this.media = {
+      a: {
+        type: "image",
+        resource: "some_image.png",
+        state: {
+          visible: true,
+        },
+      },
+      b: {
+        type: "audio",
+        resource: "some_audio.wav",
+        state: {
+          visible: true,
+          playing: true,
+          timestamp: 0,
+          length: 45,
+          volume: 100,
+        } as IAudioMediaState,
+      },
+      c: {
+        type: "media",
+        resource: "some_video.mp4",
+        state: {
+          visible: true,
+          playing: true,
+          timestamp: 314,
+          length: 360,
+          volume: 100,
+        } as IVideoMediaState,
+      },
+    };
+    this.activeMedia = [];
   }
 
   public handshake(): void {
@@ -63,6 +118,18 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     this.dispatchEvent(
       new CustomEvent(eventNames.currentNode, { detail: this.currentNode }),
     );
+
+    // Toggle media (for testing purposes)
+    const remove = this.activeMedia.includes(this.currentNode);
+    const eventName = remove ? eventNames.mediaRemoved : eventNames.mediaAdded;
+    this.dispatchEvent(
+      new CustomEvent(eventName, { detail: this.media[this.currentNode] }),
+    );
+    if (remove) {
+      this.activeMedia.splice(this.activeMedia.indexOf(this.currentNode), 1);
+    } else {
+      this.activeMedia.push(this.currentNode);
+    }
   }
 }
 
