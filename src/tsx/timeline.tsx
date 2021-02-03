@@ -5,7 +5,6 @@ import { INodeCollection } from "./types";
 import style from "../less/timeline.module.less";
 
 const VIEWBOX_WIDTH = 200;
-const VIEWBOX_HEIGHT = 360;
 const LEFT_MARGIN = 30;
 const TOP_MARGIN = -40;
 
@@ -13,23 +12,29 @@ const NODE_SPACING = 40;
 const NODE_RADIUS = 5;
 
 const NODES_BEFORE = 3;
-// Enough nodes after that the last is out of view
-const NODES_AFTER =
-  Math.round((VIEWBOX_HEIGHT - TOP_MARGIN) / NODE_SPACING) - NODES_BEFORE + 1;
 interface IProps {
   nodes: INodeCollection;
   history: string[];
 }
 
-class Timeline extends React.PureComponent<IProps, { id: string }> {
+interface IState {
+  id: string;
+  viewboxHeight: number;
+}
+
+class Timeline extends React.PureComponent<IProps, IState> {
   public constructor(props: IProps) {
     super(props);
     // Create a random ID, to avoid collisions if we ever have multiple
     // timelines.
-    this.state = { id: `timeline${Math.round(Math.random() * 10000000)}` };
+    this.state = {
+      id: `timeline${Math.round(Math.random() * 10000000)}`,
+      viewboxHeight: 0,
+    };
   }
 
   public componentDidMount(): void {
+    this.calculateViewboxHeight();
     this.updateTimeline(this.props.nodes, this.props.history);
   }
 
@@ -37,7 +42,26 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
     this.updateTimeline(this.props.nodes, this.props.history);
   }
 
+  private calculateViewboxHeight(): void {
+    const { height, width } = document
+      .getElementById(this.state.id)
+      .getBoundingClientRect();
+    console.log(height);
+    console.log(width);
+    // This will only grow the viewbox, never shrink it.
+    // Since we only do it when mounting it's fine for now.
+    this.setState({
+      viewboxHeight: (height - 2) * (VIEWBOX_WIDTH / (width - 2)),
+    });
+    console.log(height * (VIEWBOX_WIDTH / width));
+  }
+
   public updateTimeline(nodes: INodeCollection, history: string[]): void {
+    // Enough nodes after that the last is out of view
+    const nodesAfter =
+      Math.round((this.state.viewboxHeight - TOP_MARGIN) / NODE_SPACING) -
+      NODES_BEFORE +
+      1;
     // Show the recent history
     const visibleNodes = history
       .slice(-NODES_BEFORE - 1, -1)
@@ -52,7 +76,7 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
         ...nodes[currentId],
       });
       // Show a few nodes into the future
-      for (let step = 0; step < NODES_AFTER; step++) {
+      for (let step = 0; step < nodesAfter; step++) {
         const nextId = visibleNodes[visibleNodes.length - 1].next;
         if (nextId !== undefined) {
           visibleNodes.push({ id: nextId, tense: "future", ...nodes[nextId] });
@@ -167,7 +191,7 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
   public render(): JSX.Element {
     return (
       <div className={style.container} id={this.state.id}>
-        <svg viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}></svg>
+        <svg viewBox={`0 0 ${VIEWBOX_WIDTH} ${this.state.viewboxHeight}`}></svg>
       </div>
     );
   }
