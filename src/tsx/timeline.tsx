@@ -12,6 +12,10 @@ const NODE_SPACING = 40;
 const NODE_RADIUS = 5;
 
 const NODES_BEFORE = 3;
+
+const CURRENT_NODE_FILL = "wheat";
+const BACKGROUND_COLOR = "rgb(75, 14, 14)";
+
 interface IProps {
   nodes: INodeCollection;
   history: string[];
@@ -160,7 +164,10 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .attr("cy", ({ y }) => y)
             .attr("r", NODE_RADIUS)
             .classed(style.node, true)
-            .classed(style.currentNode, ({ tense }) => tense === "present");
+            .classed(style.currentNode, ({ tense }) => tense === "present")
+            .attr("fill", ({ tense }) =>
+              tense === "present" ? CURRENT_NODE_FILL : BACKGROUND_COLOR,
+            );
           g.append("foreignObject")
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2)
@@ -177,7 +184,10 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .classed(style.currentNode, ({ tense }) => tense === "present")
             .transition(transition)
             .attr("cx", ({ x }) => x)
-            .attr("cy", ({ y }) => y);
+            .attr("cy", ({ y }) => y)
+            .attr("fill", ({ tense }) =>
+              tense === "present" ? CURRENT_NODE_FILL : BACKGROUND_COLOR,
+            );
           update
             .select("foreignObject")
             .transition(transition)
