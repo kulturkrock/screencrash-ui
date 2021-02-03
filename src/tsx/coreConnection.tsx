@@ -62,12 +62,14 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
 
   public nextNode(): void {
     const currentNodeId = this.history[this.history.length - 1];
-    this.history = [...this.history, this.nodes[currentNodeId].next];
-    this.dispatchEvent(
-      new CustomEvent(eventNames.history, {
-        detail: this.history,
-      }),
-    );
+    if (this.nodes[currentNodeId].next !== undefined) {
+      this.history = [...this.history, this.nodes[currentNodeId].next];
+      this.dispatchEvent(
+        new CustomEvent(eventNames.history, {
+          detail: this.history,
+        }),
+      );
+    }
   }
 }
 

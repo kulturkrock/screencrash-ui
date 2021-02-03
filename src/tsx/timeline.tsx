@@ -54,7 +54,9 @@ class Timeline extends React.PureComponent<IProps, { id: string }> {
       // Show a few nodes into the future
       for (let step = 0; step < NODES_AFTER; step++) {
         const nextId = visibleNodes[visibleNodes.length - 1].next;
-        visibleNodes.push({ id: nextId, tense: "future", ...nodes[nextId] });
+        if (nextId !== undefined) {
+          visibleNodes.push({ id: nextId, tense: "future", ...nodes[nextId] });
+        }
       }
     }
     const pastNodes = visibleNodes.filter(({ tense }) => tense === "past")
