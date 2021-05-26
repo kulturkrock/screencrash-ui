@@ -10,6 +10,7 @@ import style from "../less/liveScreen.module.less";
 interface IState {
   nodes: INodeCollection;
   history: string[];
+  script: string;
 }
 
 class LiveScreen extends React.PureComponent<
@@ -18,7 +19,7 @@ class LiveScreen extends React.PureComponent<
 > {
   constructor(props: { coreConnection: ICoreConnection }) {
     super(props);
-    this.state = { nodes: {}, history: [] };
+    this.state = { nodes: {}, history: [], script: null };
     this.handleKey = this.handleKey.bind(this);
   }
 
@@ -36,7 +37,7 @@ class LiveScreen extends React.PureComponent<
       <div className={style.screen}>
         <StatusView />
         <Timeline nodes={this.state.nodes} history={this.state.history} />
-        <PdfViewer />
+        <PdfViewer script={this.state.script} />
       </div>
     );
   }
@@ -47,6 +48,9 @@ class LiveScreen extends React.PureComponent<
     });
     this.props.coreConnection.addEventListener("history", (event) => {
       this.setState({ history: event.detail });
+    });
+    this.props.coreConnection.addEventListener("script", (event) => {
+      this.setState({ script: event.detail });
     });
 
     this.props.coreConnection.handshake();
