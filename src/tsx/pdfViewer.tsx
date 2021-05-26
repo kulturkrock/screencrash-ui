@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 
 import style from "../less/pdfViewer.module.less";
 
@@ -10,7 +11,9 @@ class PdfViewer extends React.PureComponent<{ script: string }> {
   public render(): JSX.Element {
     return (
       <div className={style.container}>
-        <div className={style.textArea}>{this.props.script}</div>
+        <Document file={this.props.script}>
+          <Page pageNumber={1} />
+        </Document>
       </div>
     );
   }
