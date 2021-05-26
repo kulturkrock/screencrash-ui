@@ -1,4 +1,5 @@
 import { INodeCollection } from "./types";
+import script from "../../sample_data/Apornas_o_2020-01-11.pdf";
 
 const eventNames = {
   nodes: "nodes",
@@ -56,7 +57,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
       },
     };
     this.history = ["a"];
-    this.script = "Jag är ett manus";
+    this.script = script;
   }
 
   public handshake(): void {

@@ -44,6 +44,14 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.pdf$/,
+        use: [
+          {
+            loader: "url-loader",
+          },
+        ],
+      },
     ],
   },
 
