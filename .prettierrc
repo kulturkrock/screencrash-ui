@@ -1,3 +1,11 @@
 {
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "overrides": [
+    {
+      "files": "*.less",
+      "options": {
+        "tabWidth": 4
+      }
+    }
+  ]
 }
