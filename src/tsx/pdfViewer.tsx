@@ -46,6 +46,8 @@ class PdfViewer extends React.PureComponent<{ script: string }, IState> {
               key={index + 1}
               pageNumber={index + 1}
               width={this.state.pdfWidth}
+              renderAnnotationLayer={false}
+              renderTextLayer={false}
             />
           ))}
         </Document>
