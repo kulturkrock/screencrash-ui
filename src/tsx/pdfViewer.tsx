@@ -6,6 +6,7 @@ import style from "../less/pdfViewer.module.less";
 interface IState {
   id: string;
   pdfWidth: number;
+  numPages: number;
 }
 
 class PdfViewer extends React.PureComponent<{ script: string }, IState> {
@@ -16,6 +17,7 @@ class PdfViewer extends React.PureComponent<{ script: string }, IState> {
     this.state = {
       id: `pdfViewer${Math.round(Math.random() * 10000000)}`,
       pdfWidth: 0,
+      numPages: 0,
     };
   }
 
@@ -33,8 +35,19 @@ class PdfViewer extends React.PureComponent<{ script: string }, IState> {
   public render(): JSX.Element {
     return (
       <div className={style.container} id={this.state.id}>
-        <Document file={this.props.script}>
-          <Page pageNumber={1} width={this.state.pdfWidth} />
+        <Document
+          file={this.props.script}
+          onLoadSuccess={({ numPages }) => {
+            this.setState({ numPages });
+          }}
+        >
+          {[...Array(this.state.numPages).keys()].map((index) => (
+            <Page
+              key={index + 1}
+              pageNumber={index + 1}
+              width={this.state.pdfWidth}
+            />
+          ))}
         </Document>
       </div>
     );
