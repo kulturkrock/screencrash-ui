@@ -7,17 +7,17 @@ import { INodeCollection } from "./types";
 
 import style from "../less/liveScreen.module.less";
 
+interface IProps {
+  coreConnection: ICoreConnection;
+}
 interface IState {
   nodes: INodeCollection;
   history: string[];
   script: string;
 }
 
-class LiveScreen extends React.PureComponent<
-  { coreConnection: ICoreConnection },
-  IState
-> {
-  constructor(props: { coreConnection: ICoreConnection }) {
+class LiveScreen extends React.PureComponent<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = { nodes: {}, history: [], script: null };
     this.handleKey = this.handleKey.bind(this);
@@ -33,11 +33,19 @@ class LiveScreen extends React.PureComponent<
   }
 
   public render(): JSX.Element {
+    const currentNodeId = this.state.history[this.state.history.length - 1];
+    const currentNode = this.state.nodes[currentNodeId];
     return (
       <div className={style.screen}>
         <StatusView />
         <Timeline nodes={this.state.nodes} history={this.state.history} />
-        <PdfViewer script={this.state.script} />
+        <PdfViewer
+          script={this.state.script}
+          currentPage={currentNode ? currentNode.pdfPage : 0}
+          currentLocationOnPage={
+            currentNode ? currentNode.pdfLocationOnPage : 0
+          }
+        />
       </div>
     );
   }
