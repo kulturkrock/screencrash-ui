@@ -45,18 +45,29 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(address: string) {
     super();
+    // TODO: Use real lines with correct locations
     this.nodes = {
-      a: {
-        next: "b",
-        prompt: "Välkommen till Kulturkrocks senaste föreställning!",
+      "11": {
+        next: "160",
+        prompt:
+          "Jag har hört att han är dömd att segla de sju haven för alltid i en fruktlös jakt på sin älskade!",
+        pdfPage: 2,
+        pdfLocationOnPage: 0.6,
       },
-      b: { next: "c", prompt: "Jag ser att ni fortfarande är på väg in." },
-      c: {
-        next: "a",
-        prompt: "Några av er kanske missade det, så jag säger det igen:",
+      "160": {
+        next: "1126",
+        prompt: "Ja, då var vi av med honom!",
+        pdfPage: 8,
+        pdfLocationOnPage: 0.4,
+      },
+      "1126": {
+        next: "11",
+        prompt: "Vad är tårtan till?",
+        pdfPage: 48,
+        pdfLocationOnPage: 0.48,
       },
     };
-    this.history = ["a"];
+    this.history = ["1126"];
     this.script = script;
   }
 

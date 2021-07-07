@@ -1,6 +1,8 @@
 interface INode {
   next: string;
   prompt: string;
+  pdfPage: number;
+  pdfLocationOnPage: number;
 }
 
 interface INodeCollection {
