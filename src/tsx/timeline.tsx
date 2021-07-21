@@ -6,12 +6,9 @@ import style from "../less/timeline.module.less";
 
 const VIEWBOX_WIDTH = 200;
 const LEFT_MARGIN = 30;
-const TOP_MARGIN = -40;
 
 const NODE_SPACING = 40;
 const NODE_RADIUS = 5;
-
-const NODES_BEFORE = 3;
 
 const CURRENT_NODE_FILL = "wheat";
 const BACKGROUND_COLOR = "rgb(75, 14, 14)";
@@ -19,11 +16,13 @@ const BACKGROUND_COLOR = "rgb(75, 14, 14)";
 interface IProps {
   nodes: INodeCollection;
   history: string[];
+  focusY: number;
 }
 
 interface IState {
   id: string;
   viewboxHeight: number;
+  scale: number;
 }
 
 class Timeline extends React.PureComponent<IProps, IState> {
@@ -34,6 +33,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
     this.state = {
       id: `timeline${Math.round(Math.random() * 10000000)}`,
       viewboxHeight: 0,
+      scale: 1,
     };
   }
 
@@ -50,22 +50,25 @@ class Timeline extends React.PureComponent<IProps, IState> {
     const { height, width } = document
       .getElementById(this.state.id)
       .getBoundingClientRect();
+    const viewboxHeight = (height - 2) * (VIEWBOX_WIDTH / (width - 2));
     // This will only grow the viewbox, never shrink it.
     // Since we only do it when mounting it's fine for now.
     this.setState({
-      viewboxHeight: (height - 2) * (VIEWBOX_WIDTH / (width - 2)),
+      viewboxHeight,
+      scale: viewboxHeight / height,
     });
   }
 
   public updateTimeline(nodes: INodeCollection, history: string[]): void {
-    // Enough nodes after that the last is out of view
+    const focusY = this.props.focusY * this.state.scale;
+    // Enough nodes before and after that the first and last are out of view
     const nodesAfter =
-      Math.round((this.state.viewboxHeight - TOP_MARGIN) / NODE_SPACING) -
-      NODES_BEFORE +
-      1;
+      Math.round((this.state.viewboxHeight - focusY) / NODE_SPACING) + 1;
+    const nodesBefore = Math.round(focusY / NODE_SPACING) + 1;
+    const firstNodeY = focusY - nodesBefore * NODE_SPACING;
     // Show the recent history
     const visibleNodes = history
-      .slice(-NODES_BEFORE - 1, -1)
+      .slice(-nodesBefore - 1, -1)
       .map((id) => ({ id, tense: "past", ...nodes[id] }));
 
     if (history.length > 0) {
@@ -87,9 +90,9 @@ class Timeline extends React.PureComponent<IProps, IState> {
     const pastNodes = visibleNodes.filter(({ tense }) => tense === "past")
       .length;
     const nodesWithPosition = visibleNodes.map((node, index) => ({
-      distanceFromStart: Math.max(history.length - NODES_BEFORE - 1, 0) + index,
+      distanceFromStart: Math.max(history.length - nodesBefore - 1, 0) + index,
       x: LEFT_MARGIN,
-      y: TOP_MARGIN + (index + NODES_BEFORE - pastNodes) * NODE_SPACING,
+      y: firstNodeY + (index + nodesBefore - pastNodes) * NODE_SPACING,
       ...node,
     }));
     // Add lines between the nodes
