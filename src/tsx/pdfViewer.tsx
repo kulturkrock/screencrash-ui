@@ -7,12 +7,12 @@ interface IProps {
   script: string;
   currentPage: number;
   currentLocationOnPage: number;
+  focusY: number;
 }
 
 interface IState {
   id: string;
   pdfWidth: number;
-  pdfHeight: number;
   numPages: number;
   loadedPages: number; // To keep track of when we've fully loaded
 }
@@ -25,21 +25,19 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
     this.state = {
       id: `pdfViewer${Math.round(Math.random() * 10000000)}`,
       pdfWidth: 0,
-      pdfHeight: 0,
       numPages: 0,
       loadedPages: 0,
     };
   }
 
   public componentDidMount(): void {
-    const { width, height } = document
+    const { width } = document
       .getElementById(this.state.id)
       .getBoundingClientRect();
     // This will only grow the container, never shrink it.
     // Since we only do it when mounting it's fine for now.
     this.setState({
       pdfWidth: width,
-      pdfHeight: height,
     });
   }
 
@@ -59,9 +57,13 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
   }
 
   private scrollToLocation(page: number, locationOnPage: number): void {
-    const pageHeight = this.state.pdfWidth * Math.sqrt(2); // Assume A4 size
-    document.getElementById(this.state.id).scrollTo({
-      top: (page + locationOnPage) * pageHeight - 0.5 * this.state.pdfHeight,
+    // const pageHeight = this.state.pdfWidth * Math.sqrt(2); // Assume A4 size
+    const container = document.getElementById(this.state.id);
+    const allPages = container.children[0];
+    const { height } = allPages.getBoundingClientRect();
+    const pageHeight = height / this.state.numPages;
+    container.scrollTo({
+      top: (page + locationOnPage) * pageHeight - this.props.focusY,
       behavior: "smooth",
     });
   }

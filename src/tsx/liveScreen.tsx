@@ -38,13 +38,18 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     return (
       <div className={style.screen}>
         <StatusView />
-        <Timeline nodes={this.state.nodes} history={this.state.history} />
+        <Timeline
+          nodes={this.state.nodes}
+          history={this.state.history}
+          focusY={200}
+        />
         <PdfViewer
           script={this.state.script}
           currentPage={currentNode ? currentNode.pdfPage : 0}
           currentLocationOnPage={
             currentNode ? currentNode.pdfLocationOnPage : 0
           }
+          focusY={200}
         />
       </div>
     );
