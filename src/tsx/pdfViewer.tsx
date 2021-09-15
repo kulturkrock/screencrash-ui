@@ -8,6 +8,7 @@ interface IProps {
   currentPage: number;
   currentLocationOnPage: number;
   focusY: number;
+  scrollToCurrentLocation: boolean;
 }
 
 interface IState {
@@ -42,12 +43,18 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
   }
 
   public componentDidUpdate(prevProps: IProps, prevState: IState): void {
-    if (
+    const changedLocation =
       this.props.currentPage !== prevProps.currentPage ||
-      this.props.currentLocationOnPage !== prevProps.currentLocationOnPage ||
-      (this.state.numPages !== 0 &&
-        this.state.loadedPages !== prevState.loadedPages &&
-        this.state.loadedPages === this.state.numPages)
+      this.props.currentLocationOnPage !== prevProps.currentLocationOnPage;
+    const justFinishedLoading =
+      this.state.numPages !== 0 &&
+      this.state.loadedPages !== prevState.loadedPages &&
+      this.state.loadedPages === this.state.numPages;
+    const justEnabledScrolling =
+      this.props.scrollToCurrentLocation && !prevProps.scrollToCurrentLocation;
+    if (
+      this.props.scrollToCurrentLocation &&
+      (changedLocation || justFinishedLoading || justEnabledScrolling)
     ) {
       this.scrollToLocation(
         this.props.currentPage,

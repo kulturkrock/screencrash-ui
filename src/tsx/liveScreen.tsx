@@ -14,12 +14,18 @@ interface IState {
   nodes: INodeCollection;
   history: string[];
   script: string;
+  autoscrollScript: boolean;
 }
 
 class LiveScreen extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { nodes: {}, history: [], script: null };
+    this.state = {
+      nodes: {},
+      history: [],
+      script: null,
+      autoscrollScript: true,
+    };
     this.handleKey = this.handleKey.bind(this);
   }
 
@@ -50,6 +56,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
             currentNode ? currentNode.pdfLocationOnPage : 0
           }
           focusY={200}
+          scrollToCurrentLocation={this.state.autoscrollScript}
         />
       </div>
     );
@@ -74,6 +81,8 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     if (document.activeElement === document.body && !event.repeat) {
       if (event.key === " ") {
         this.props.coreConnection.nextNode();
+      } else if (event.key === "s") {
+        this.setState({ autoscrollScript: !this.state.autoscrollScript });
       }
     }
   }
