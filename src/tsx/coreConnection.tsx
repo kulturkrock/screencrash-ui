@@ -1,5 +1,5 @@
 import { INodeCollection } from "./types";
-import script from "../../sample_data/Apornas_o_2020-01-11.pdf";
+import script from "../../sample_data/script.pdf";
 
 const eventNames = {
   nodes: "nodes",
