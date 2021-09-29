@@ -45,7 +45,6 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(address: string) {
     super();
-    // TODO: Use real lines with correct locations
     this.nodes = {
       "11": {
         next: "160",

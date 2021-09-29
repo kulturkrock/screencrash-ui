@@ -64,7 +64,6 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
   }
 
   private scrollToLocation(page: number, locationOnPage: number): void {
-    // const pageHeight = this.state.pdfWidth * Math.sqrt(2); // Assume A4 size
     const container = document.getElementById(this.state.id);
     const allPages = container.children[0];
     const { height } = allPages.getBoundingClientRect();
