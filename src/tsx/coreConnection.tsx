@@ -1,6 +1,11 @@
 import { INodeCollection } from "./types";
+import script from "../../sample_data/script.pdf";
 
-const eventNames = { nodes: "nodes", history: "history" };
+const eventNames = {
+  nodes: "nodes",
+  history: "history",
+  script: "script",
+};
 
 /**
  * This class handles the communication with the core.
@@ -21,6 +26,10 @@ interface ICoreConnection extends EventTarget {
     event: "history",
     listener: (event: CustomEvent<string[]>) => void,
   ): void;
+  addEventListener(
+    event: "script",
+    listener: (event: CustomEvent<string>) => void,
+  ): void;
 }
 
 /**
@@ -30,6 +39,7 @@ interface ICoreConnection extends EventTarget {
 class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private nodes: INodeCollection;
   private history: string[];
+  private script: string;
 
   // We only use the address in the real core connection
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,6 +57,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
       },
     };
     this.history = ["a"];
+    this.script = script;
   }
 
   public handshake(): void {
@@ -57,6 +68,9 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
       new CustomEvent(eventNames.history, {
         detail: this.history,
       }),
+    );
+    this.dispatchEvent(
+      new CustomEvent(eventNames.script, { detail: this.script }),
     );
   }
 

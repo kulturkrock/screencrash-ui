@@ -14,7 +14,7 @@ module.exports = {
   output: {
     filename: "[name].js",
     path: path.resolve(__dirname, "./dist/webpack"),
-    publicPath: "/",
+    publicPath: "/webpack/",
   },
 
   module: {
@@ -41,6 +41,14 @@ module.exports = {
           },
           {
             loader: "less-loader",
+          },
+        ],
+      },
+      {
+        test: /\.pdf$/,
+        use: [
+          {
+            loader: "url-loader",
           },
         ],
       },

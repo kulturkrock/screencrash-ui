@@ -50,14 +50,11 @@ class Timeline extends React.PureComponent<IProps, IState> {
     const { height, width } = document
       .getElementById(this.state.id)
       .getBoundingClientRect();
-    console.log(height);
-    console.log(width);
     // This will only grow the viewbox, never shrink it.
     // Since we only do it when mounting it's fine for now.
     this.setState({
       viewboxHeight: (height - 2) * (VIEWBOX_WIDTH / (width - 2)),
     });
-    console.log(height * (VIEWBOX_WIDTH / width));
   }
 
   public updateTimeline(nodes: INodeCollection, history: string[]): void {
