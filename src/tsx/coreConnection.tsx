@@ -1,4 +1,4 @@
-import { INodeCollection, IEffect } from "./types";
+import { INodeCollection, IEffect, EffectType } from "./types";
 import script from "../../sample_data/script.pdf";
 
 const eventNames = {
@@ -79,11 +79,16 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     this.currentEffectId = 0;
     this.effectStarts = {
       "11": [
-        { id: 0, name: "someaudio" },
-        { id: 0, name: "moreaudio" },
+        { id: 0, name: "someaudio", type: EffectType.Other },
+        {
+          id: 7,
+          name: "moreaudio",
+          type: EffectType.Audio,
+          duration: 55,
+        },
       ],
       "160": [],
-      "1126": [{ id: 9, name: "seagull.mp4" }],
+      "1126": [{ id: 9, name: "seagull.mp4", type: EffectType.Other }],
     };
     this.activeEffects = [];
   }
