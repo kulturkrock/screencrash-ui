@@ -11,7 +11,7 @@ interface IProps {
 class StatusView extends React.PureComponent<IProps, IEmpty> {
   public render(): JSX.Element {
     return (
-      <div className={style.container}>
+      <div className={style.box}>
         {this.props.effects.map((effect) => (
           <StatusEffect key={effect.id} effect={effect} />
         ))}
