@@ -3,20 +3,37 @@ import * as React from "react";
 import { IEmpty } from "./types";
 import style from "../less/statusView.module.less";
 
+interface IProps {
+  autoscrollEnabled: boolean;
+}
+
 interface IState {
   text: string;
 }
 
-class StatusView extends React.PureComponent<IEmpty, IState> {
-  constructor(props: IEmpty) {
+class StatusView extends React.PureComponent<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = { text: "Jag är en statusvy" };
+  }
+
+  private getSettings() {
+    let mytext = ["Gå till nästa nod: spacebar"]
+    mytext.push("Autoscroll i manus är " + (this.props.autoscrollEnabled ? "PÅ" : "AV"))
+    return mytext
   }
 
   public render(): JSX.Element {
     return (
       <div className={style.container}>
-        <div className={style.textArea}>{this.state.text}</div>
+        <div className={style.box}>
+          <div className={style.textArea}>{this.state.text}</div>
+        </div>
+        <div className={style.box}>
+          {this.getSettings().map((text) => (
+            <div className={style.textRow}>{text}</div>
+          ))}
+        </div>
       </div>
     );
   }
