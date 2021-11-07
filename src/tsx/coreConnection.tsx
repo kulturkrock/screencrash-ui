@@ -1,10 +1,11 @@
-import { INodeCollection } from "./types";
+import { INodeCollection, IEffect } from "./types";
 import script from "../../sample_data/script.pdf";
 
 const eventNames = {
   nodes: "nodes",
   history: "history",
   script: "script",
+  effects: "effects",
 };
 
 /**
@@ -30,6 +31,10 @@ interface ICoreConnection extends EventTarget {
     event: "script",
     listener: (event: CustomEvent<string>) => void,
   ): void;
+  addEventListener(
+    event: "effects",
+    listener: (event: CustomEvent<IEffect[]>) => void,
+  ): void;
 }
 
 /**
@@ -40,6 +45,9 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private nodes: INodeCollection;
   private history: string[];
   private script: string;
+  private effects: IEffect[];
+  private effectStarts: { [nodeId: string]: number[] };
+  private activeEffects: number[];
 
   // We only use the address in the real core connection
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -68,6 +76,17 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     };
     this.history = ["1126"];
     this.script = script;
+    this.effects = [
+      { id: 5, name: "someaudio" },
+      { id: 7, name: "moreaudio" },
+      { id: 9, name: "seagull.mp4" },
+    ];
+    this.effectStarts = {
+      "11": [5, 7],
+      "160": [],
+      "1126": [9],
+    };
+    this.activeEffects = [];
   }
 
   public handshake(): void {
@@ -82,6 +101,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     this.dispatchEvent(
       new CustomEvent(eventNames.script, { detail: this.script }),
     );
+    this.sendEffectsEvent();
   }
 
   public nextNode(): void {
@@ -93,7 +113,31 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
           detail: this.history,
         }),
       );
+
+      const newCurrentNodeId = this.history[this.history.length - 1];
+      this.effectStarts[newCurrentNodeId].forEach((effectId) => {
+        this.activeEffects.push(effectId);
+        setTimeout(
+          this.removeEffect.bind(this, effectId),
+          2000 + Math.random() * 3000,
+        );
+      });
+      this.sendEffectsEvent();
     }
+  }
+
+  private sendEffectsEvent(): void {
+    this.dispatchEvent(
+      new CustomEvent(eventNames.effects, {
+        detail: this.effects.filter((e) => this.activeEffects.includes(e.id)),
+      }),
+    );
+  }
+
+  private removeEffect(effectId: number): void {
+    const index = this.activeEffects.indexOf(effectId);
+    this.activeEffects.splice(index, 1);
+    this.sendEffectsEvent();
   }
 }
 

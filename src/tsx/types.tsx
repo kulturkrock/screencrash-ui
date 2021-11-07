@@ -9,7 +9,12 @@ interface INodeCollection {
   [index: string]: INode;
 }
 
+interface IEffect {
+  id: number;
+  name: string;
+}
+
 // Empty object, since there is no built-in for it
 type IEmpty = Record<never, never>;
 
-export { INode, INodeCollection, IEmpty };
+export { INode, INodeCollection, IEffect, IEmpty };
