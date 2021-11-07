@@ -38,12 +38,33 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     document.removeEventListener("keydown", this.handleKey);
   }
 
+  private getSettings() {
+    const settings = ["Gå till nästa nod: spacebar"];
+    settings.push(
+      "Autoscroll i manus är " +
+        (this.state.autoscrollScript ? "PÅ" : "AV") +
+        " (växla med S)",
+    );
+    return settings;
+  }
+
   public render(): JSX.Element {
     const currentNodeId = this.state.history[this.state.history.length - 1];
     const currentNode = this.state.nodes[currentNodeId];
     return (
       <div className={style.screen}>
-        <StatusView autoscrollEnabled={this.state.autoscrollScript} />
+        <div className={style.container}>
+          <div className={style.statusViewBox}>
+            <StatusView />
+          </div>
+          <div className={style.settingsBox}>
+            {this.getSettings().map((text, index) => (
+              <div className={style.textRow} key={index}>
+                {text}
+              </div>
+            ))}
+          </div>
+        </div>
         <Timeline
           nodes={this.state.nodes}
           history={this.state.history}
