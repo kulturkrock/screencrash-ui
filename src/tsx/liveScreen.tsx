@@ -43,7 +43,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     const currentNode = this.state.nodes[currentNodeId];
     return (
       <div className={style.screen}>
-        <StatusView autoscrollEnabled={this.state.autoscrollScript}/>
+        <StatusView autoscrollEnabled={this.state.autoscrollScript} />
         <Timeline
           nodes={this.state.nodes}
           history={this.state.history}

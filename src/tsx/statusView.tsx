@@ -20,7 +20,8 @@ class StatusView extends React.PureComponent<IProps, IState> {
   private getSettings() {
     const mytext = ["Gå till nästa nod: spacebar"];
     mytext.push(
-      "Autoscroll i manus är " + (this.props.autoscrollEnabled ? "PÅ" : "AV"));
+      "Autoscroll i manus är " + (this.props.autoscrollEnabled ? "PÅ" : "AV"),
+    );
     return mytext;
   }
 
@@ -33,7 +34,7 @@ class StatusView extends React.PureComponent<IProps, IState> {
         <div className={style.settingsBox}>
           {this.getSettings().map((text, index) => (
             <div className={style.textRow} key={index}>
-                {text}
+              {text}
             </div>
           ))}
         </div>
