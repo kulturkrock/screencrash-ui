@@ -15,7 +15,9 @@ class StatusView extends React.PureComponent<IEmpty, IState> {
 
   public render(): JSX.Element {
     return (
-      <div className={style.textArea}>{this.state.text}</div>
+      <div className={style.box}>
+        <div className={style.textArea}>{this.state.text}</div>
+      </div>
     );
   }
 }

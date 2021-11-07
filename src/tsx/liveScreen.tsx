@@ -53,8 +53,8 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     const currentNode = this.state.nodes[currentNodeId];
     return (
       <div className={style.screen}>
-        <div className={style.container}>
-          <div className={style.statusViewBox}>
+        <div>
+          <div className={style.statusViewContainer}>
             <StatusView />
           </div>
           <div className={style.settingsBox}>
