@@ -105,7 +105,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     this.dispatchEvent(
       new CustomEvent(eventNames.script, { detail: this.script }),
     );
-    this.sendEffectsChangedEvent();
+    this.sendEffectsEvent();
   }
 
   public nextNode(): void {
@@ -128,11 +128,11 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
           2000 + Math.random() * 3000,
         );
       });
-      this.sendEffectsChangedEvent();
+      this.sendEffectsEvent();
     }
   }
 
-  private sendEffectsChangedEvent(): void {
+  private sendEffectsEvent(): void {
     this.dispatchEvent(
       new CustomEvent(eventNames.effects, {
         detail: [...this.activeEffects],
@@ -145,7 +145,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
       (effect) => effect.id === effectId,
     );
     this.activeEffects.splice(index, 1);
-    this.sendEffectsChangedEvent();
+    this.sendEffectsEvent();
   }
 }
 
