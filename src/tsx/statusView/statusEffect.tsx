@@ -1,17 +1,19 @@
 import * as React from "react";
 
-import { IEmpty, IEffect, EffectType } from "../types";
+import { IEmpty, IEffect, EffectType, IEffectActionEvent } from "../types";
 import style from "../../less/statusView.module.less";
+import { AudioEffect } from "./audioEffect";
 
 interface IProps {
   effect: IEffect;
+  onEffectAction: (event: IEffectActionEvent) => void;
 }
 
 class StatusEffect extends React.PureComponent<IProps, IEmpty> {
   public render(): JSX.Element {
     return (
       <div className={style.effectContainer}>
-        <EffectContent effect={this.props.effect} />
+        <EffectContent {...this.props} />
       </div>
     );
   }
@@ -22,7 +24,7 @@ function EffectContent(props: IProps) {
     case EffectType.Other:
       return BaseEffectContent(props);
     case EffectType.Audio:
-      return AudioEffectContent(props);
+      return <AudioEffect {...props} />;
     case EffectType.Video:
       return VideoEffectContent(props);
     case EffectType.Image:
@@ -50,14 +52,6 @@ function ImageEffectContent(props: IProps): JSX.Element {
 
 function VideoEffectContent(props: IProps): JSX.Element {
   return <div className={style.textArea}>{props.effect.name} [VIDEO]</div>;
-}
-
-function AudioEffectContent(props: IProps): JSX.Element {
-  return (
-    <div className={style.textArea}>
-      {props.effect.name} (duration: {props.effect.duration})
-    </div>
-  );
 }
 
 export { StatusEffect };

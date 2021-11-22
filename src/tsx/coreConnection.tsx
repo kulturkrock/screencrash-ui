@@ -1,4 +1,9 @@
-import { INodeCollection, IEffect, EffectType } from "./types";
+import {
+  INodeCollection,
+  IEffect,
+  EffectType,
+  IEffectActionEvent,
+} from "./types";
 import script from "../../sample_data/script.pdf";
 
 const eventNames = {
@@ -17,6 +22,7 @@ interface ICoreConnection extends EventTarget {
   // UI-initiated actions
   handshake(): void;
   nextNode(): void;
+  handleEffectAction(event: IEffectActionEvent): void;
 
   // Events
   addEventListener(
@@ -48,6 +54,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private currentEffectId: number;
   private effectStarts: { [nodeId: string]: IEffect[] };
   private activeEffects: IEffect[];
+  private lastEffectUpdate: number;
 
   // We only use the address in the real core connection
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -84,13 +91,16 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
           id: 7,
           name: "moreaudio",
           type: EffectType.Audio,
-          duration: 55,
+          duration: 20,
+          currentTime: 0,
+          playing: true,
         },
       ],
       "160": [],
       "1126": [{ id: 9, name: "seagull.mp4", type: EffectType.Other }],
     };
     this.activeEffects = [];
+    this.lastEffectUpdate = 0;
   }
 
   public handshake(): void {
@@ -106,6 +116,9 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
       new CustomEvent(eventNames.script, { detail: this.script }),
     );
     this.sendEffectsChangedEvent();
+
+    this.lastEffectUpdate = Date.now();
+    setInterval(this.updateEffects.bind(this), 50);
   }
 
   public nextNode(): void {
@@ -123,11 +136,82 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
         const newEffect = { ...effect, id: this.currentEffectId };
         this.currentEffectId++;
         this.activeEffects.push(newEffect);
-        setTimeout(
-          this.removeEffect.bind(this, newEffect.id),
-          2000 + Math.random() * 3000,
-        );
+        if (!newEffect.duration) {
+          setTimeout(
+            this.removeEffect.bind(this, newEffect.id),
+            2000 + Math.random() * 3000,
+          );
+        }
       });
+      this.sendEffectsChangedEvent();
+    }
+  }
+
+  public handleEffectAction(event: IEffectActionEvent): void {
+    const effectIndex = this.activeEffects.findIndex(
+      (effect) => effect.id == event.effectId,
+    );
+
+    if (effectIndex >= 0) {
+      let changed = false;
+      switch (event.type) {
+        case "play":
+          this.activeEffects[effectIndex].playing = true;
+          changed = true;
+          break;
+        case "pause":
+          this.activeEffects[effectIndex].playing = false;
+          changed = true;
+          break;
+        case "stop":
+          this.activeEffects.splice(effectIndex, 1);
+          changed = true;
+          break;
+        case "toggle_loop":
+          const loopEnabled = this.activeEffects[effectIndex].looping;
+          this.activeEffects[effectIndex].looping = !loopEnabled;
+          changed = true;
+          break;
+        case "toggle_mute":
+          const muteEnabled = this.activeEffects[effectIndex].muted;
+          this.activeEffects[effectIndex].muted = !muteEnabled;
+          changed = true;
+          break;
+        default:
+          console.log(`Unhandled effect action event: ${event.type}`);
+          break;
+      }
+
+      if (changed) {
+        this.sendEffectsChangedEvent();
+      }
+    }
+  }
+
+  private updateEffects(): void {
+    const nofEffects = this.activeEffects.length;
+    let changed = false;
+
+    const currentTime = Date.now();
+    const timeDiff = currentTime - this.lastEffectUpdate;
+    this.lastEffectUpdate = currentTime;
+
+    this.activeEffects = this.activeEffects
+      .map((effect) => {
+        if (effect.duration && effect.playing) {
+          changed = true;
+          effect.currentTime += timeDiff / 1000;
+          if (effect.looping) {
+            effect.currentTime = effect.currentTime % effect.duration;
+          }
+        }
+        return { ...effect };
+      })
+      .filter((effect) => {
+        return !effect.duration || effect.currentTime < effect.duration;
+      });
+
+    if (changed || nofEffects != this.activeEffects.length) {
       this.sendEffectsChangedEvent();
     }
   }

@@ -1,11 +1,12 @@
 import * as React from "react";
 
-import { IEffect, IEmpty } from "../types";
+import { IEffect, IEffectActionEvent, IEmpty } from "../types";
 import style from "../../less/statusView.module.less";
 import { StatusEffect } from "./statusEffect";
 
 interface IProps {
   effects: IEffect[];
+  onEffectAction: (event: IEffectActionEvent) => void;
 }
 
 class StatusView extends React.PureComponent<IProps, IEmpty> {
@@ -13,7 +14,11 @@ class StatusView extends React.PureComponent<IProps, IEmpty> {
     return (
       <div className={style.box}>
         {this.props.effects.map((effect) => (
-          <StatusEffect key={effect.id} effect={effect} />
+          <StatusEffect
+            key={effect.id}
+            effect={effect}
+            onEffectAction={this.props.onEffectAction}
+          />
         ))}
       </div>
     );
