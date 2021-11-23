@@ -97,4 +97,51 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   }
 }
 
-export { ICoreConnection, DummyCoreConnection };
+/**
+ * This class encapsulates the connection to Core
+ */
+class RealCoreConnection extends EventTarget implements ICoreConnection {
+  private address: string;
+  private socket: WebSocket;
+
+  constructor(address: string) {
+    super();
+    this.address = address;
+  }
+
+  public handshake(): void {
+    this.socket = new WebSocket(`ws://${this.address}:8001`);
+    this.socket.addEventListener("message", (event: MessageEvent) => {
+      const { messageType, data } = JSON.parse(event.data);
+      switch (messageType) {
+        case "history":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.history, {
+              detail: data,
+            }),
+          );
+          break;
+        case "nodes":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.nodes, {
+              detail: data,
+            }),
+          );
+          break;
+        case "script":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.script, { detail: data }),
+          );
+          break;
+        default:
+          console.error(`Unknown message from Core: ${messageType}`);
+      }
+    });
+  }
+
+  public nextNode(): void {
+    this.socket.send(JSON.stringify({ messageType: "next-node" }));
+  }
+}
+
+export { ICoreConnection, DummyCoreConnection, RealCoreConnection };
