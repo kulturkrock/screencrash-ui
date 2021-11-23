@@ -1,9 +1,9 @@
 import * as React from "react";
 import { ICoreConnection } from "./coreConnection";
 import { PdfViewer } from "./pdfViewer";
-import { StatusView } from "./statusView";
+import { StatusView } from "./statusView/statusView";
 import { Timeline } from "./timeline";
-import { INodeCollection } from "./types";
+import { INodeCollection, IEffect } from "./types";
 
 import style from "../less/liveScreen.module.less";
 
@@ -14,6 +14,7 @@ interface IState {
   nodes: INodeCollection;
   history: string[];
   script: string;
+  effects: IEffect[];
   autoscrollScript: boolean;
 }
 
@@ -24,6 +25,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       nodes: {},
       history: [],
       script: null,
+      effects: [],
       autoscrollScript: true,
     };
     this.handleKey = this.handleKey.bind(this);
@@ -55,7 +57,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       <div className={style.screen}>
         <div>
           <div className={style.statusViewContainer}>
-            <StatusView />
+            <StatusView effects={this.state.effects} />
           </div>
           <div className={style.settingsBox}>
             {this.getSettings().map((text, index) => (
@@ -92,6 +94,9 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     });
     this.props.coreConnection.addEventListener("script", (event) => {
       this.setState({ script: event.detail });
+    });
+    this.props.coreConnection.addEventListener("effects", (event) => {
+      this.setState({ effects: event.detail });
     });
 
     this.props.coreConnection.handshake();

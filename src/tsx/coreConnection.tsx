@@ -1,10 +1,11 @@
-import { INodeCollection } from "./types";
+import { INodeCollection, IEffect, EffectType } from "./types";
 import script from "../../sample_data/script.pdf";
 
 const eventNames = {
   nodes: "nodes",
   history: "history",
   script: "script",
+  effects: "effects",
 };
 
 /**
@@ -30,6 +31,10 @@ interface ICoreConnection extends EventTarget {
     event: "script",
     listener: (event: CustomEvent<string>) => void,
   ): void;
+  addEventListener(
+    event: "effects",
+    listener: (event: CustomEvent<IEffect[]>) => void,
+  ): void;
 }
 
 /**
@@ -40,6 +45,9 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private nodes: INodeCollection;
   private history: string[];
   private script: string;
+  private currentEffectId: number;
+  private effectStarts: { [nodeId: string]: IEffect[] };
+  private activeEffects: IEffect[];
 
   // We only use the address in the real core connection
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -68,6 +76,21 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     };
     this.history = ["1126"];
     this.script = script;
+    this.currentEffectId = 0;
+    this.effectStarts = {
+      "11": [
+        { id: 0, name: "someaudio", type: EffectType.Other },
+        {
+          id: 7,
+          name: "moreaudio",
+          type: EffectType.Audio,
+          duration: 55,
+        },
+      ],
+      "160": [],
+      "1126": [{ id: 9, name: "seagull.mp4", type: EffectType.Other }],
+    };
+    this.activeEffects = [];
   }
 
   public handshake(): void {
@@ -82,6 +105,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     this.dispatchEvent(
       new CustomEvent(eventNames.script, { detail: this.script }),
     );
+    this.sendEffectsEvent();
   }
 
   public nextNode(): void {
@@ -93,7 +117,35 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
           detail: this.history,
         }),
       );
+
+      const newCurrentNodeId = this.history[this.history.length - 1];
+      this.effectStarts[newCurrentNodeId].forEach((effect) => {
+        const newEffect = { ...effect, id: this.currentEffectId };
+        this.currentEffectId++;
+        this.activeEffects.push(newEffect);
+        setTimeout(
+          this.removeEffect.bind(this, newEffect.id),
+          2000 + Math.random() * 3000,
+        );
+      });
+      this.sendEffectsEvent();
     }
+  }
+
+  private sendEffectsEvent(): void {
+    this.dispatchEvent(
+      new CustomEvent(eventNames.effects, {
+        detail: [...this.activeEffects],
+      }),
+    );
+  }
+
+  private removeEffect(effectId: number): void {
+    const index = this.activeEffects.findIndex(
+      (effect) => effect.id === effectId,
+    );
+    this.activeEffects.splice(index, 1);
+    this.sendEffectsEvent();
   }
 }
 
