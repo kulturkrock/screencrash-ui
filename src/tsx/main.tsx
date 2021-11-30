@@ -1,7 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { DummyCoreConnection, ICoreConnection } from "./coreConnection";
+import {
+  DummyCoreConnection,
+  RealCoreConnection,
+  ICoreConnection,
+} from "./coreConnection";
 import { LiveScreen } from "./liveScreen";
 import { IEmpty } from "./types";
 import style from "../less/main.module.less";
@@ -51,8 +55,7 @@ class Main extends React.PureComponent<IEmpty, IState> {
     if (address === "fake") {
       return new DummyCoreConnection(address);
     } else {
-      // The real core connection will be here later
-      return new DummyCoreConnection(address);
+      return new RealCoreConnection(address);
     }
   }
 }
