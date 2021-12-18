@@ -163,6 +163,9 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
 
   public handshake(): void {
     this.socket = new WebSocket(`ws://${this.address}:8001`);
+    this.socket.addEventListener("open", () => {
+      this.socket.send(JSON.stringify({ client: "ui" }));
+    });
     this.socket.addEventListener("message", (event: MessageEvent) => {
       const { messageType, data } = JSON.parse(event.data);
       switch (messageType) {
