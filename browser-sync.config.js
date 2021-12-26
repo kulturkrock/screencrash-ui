@@ -12,4 +12,5 @@ module.exports = {
   server: {
     baseDir: path.resolve(__dirname, "./dist"),
   },
+  startPath: "/?core=fake",
 };
