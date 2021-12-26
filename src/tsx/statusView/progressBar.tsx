@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { IEmpty } from "../types";
 import style from "../../less/statusView.module.less";
 
 interface IState {

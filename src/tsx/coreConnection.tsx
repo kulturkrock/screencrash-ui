@@ -289,7 +289,7 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
   }
 
   public handleEffectAction(event: IEffectActionEvent): void {
-    console.log("TODO: Should handle effect action");
+    console.log(`TODO: Should handle effect action ${JSON.stringify(event)}`);
   }
 }
 
