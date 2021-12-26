@@ -22,6 +22,7 @@ interface IEffect {
   type: EffectType;
   duration?: number;
   currentTime?: number;
+  lastSync?: number;
   playing?: boolean;
   looping?: boolean;
   muted?: boolean;

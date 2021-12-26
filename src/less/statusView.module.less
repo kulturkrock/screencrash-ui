@@ -7,6 +7,7 @@
 }
 
 .textArea {
+    font-style: italic;
 }
 
 .audioInfo {
@@ -36,6 +37,10 @@
 .audioAction:hover {
     cursor: pointer;
     background-color: #f5deb360;
+}
+.audioStopEnabled,
+.audioStopEnabled:hover {
+    background: #ff000060;
 }
 .volumeValue {
     grid-row: 2;
@@ -96,6 +101,11 @@
     grid-column: 1;
     grid-row: 1;
     background-color: wheat;
+
+    -webkit-transition: width 0.2s ease-in-out;
+    -moz-transition: width 0.2s ease-in-out;
+    -o-transition: width 0.2s ease-in-out;
+    transition: width 0.2s ease-in-out;
 }
 .progressBarText {
     grid-column: 1;

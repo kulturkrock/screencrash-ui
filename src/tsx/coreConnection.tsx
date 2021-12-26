@@ -133,7 +133,11 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
 
       const newCurrentNodeId = this.history[this.history.length - 1];
       this.effectStarts[newCurrentNodeId].forEach((effect) => {
-        const newEffect = { ...effect, id: this.currentEffectId };
+        const newEffect = {
+          ...effect,
+          id: this.currentEffectId,
+          lastSync: Date.now(),
+        };
         this.currentEffectId++;
         this.activeEffects.push(newEffect);
         if (!newEffect.duration) {
@@ -177,6 +181,10 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
           this.activeEffects[effectIndex].muted = !muteEnabled;
           changed = true;
           break;
+        case "change_volume":
+          this.activeEffects[effectIndex].volume = event.numericValue;
+          changed = false;
+          break;
         default:
           console.log(`Unhandled effect action event: ${event.type}`);
           break;
@@ -190,7 +198,6 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
 
   private updateEffects(): void {
     const nofEffects = this.activeEffects.length;
-    let changed = false;
 
     const currentTime = Date.now();
     const timeDiff = currentTime - this.lastEffectUpdate;
@@ -199,7 +206,6 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     this.activeEffects = this.activeEffects
       .map((effect) => {
         if (effect.duration && effect.playing) {
-          changed = true;
           effect.currentTime += timeDiff / 1000;
           if (effect.looping) {
             effect.currentTime = effect.currentTime % effect.duration;
@@ -211,7 +217,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
         return !effect.duration || effect.currentTime < effect.duration;
       });
 
-    if (changed || nofEffects != this.activeEffects.length) {
+    if (nofEffects != this.activeEffects.length) {
       this.sendEffectsChangedEvent();
     }
   }

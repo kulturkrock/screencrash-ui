@@ -15,6 +15,7 @@ import {
 
 interface IState {
   volume: number;
+  stopEnabled: boolean;
 }
 
 interface IProps {
@@ -27,6 +28,7 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
     super(props);
     this.state = {
       volume: this.props.effect.volume ? this.props.effect.volume : 50,
+      stopEnabled: false,
     };
   }
 
@@ -48,18 +50,20 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
             {this.getPlayPauseButton()}
           </div>
           <div
-            className={`${style.audioAction} ${style.audioStop}`}
-            onClick={this.sendStop.bind(this)}
-          >
-            <MdStop />
-          </div>
-          <div
             className={`${style.audioAction} ${style.audioLoop} ${
               this.props.effect.looping ? style.looping : ""
             }`}
             onClick={this.sendToggleLoop.bind(this)}
           >
             <MdLoop />
+          </div>
+          <div
+            className={`${style.audioAction} ${style.audioStop} ${
+              this.state.stopEnabled ? style.audioStopEnabled : ""
+            }`}
+            onClick={this.sendStop.bind(this)}
+          >
+            <MdStop />
           </div>
           <div className={style.volumeValue}>{this.state.volume}</div>
           <input
@@ -74,6 +78,9 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
         <ProgressBar
           duration={this.props.effect.duration}
           currentTime={this.props.effect.currentTime}
+          lastUpdated={this.props.effect.lastSync}
+          looping={this.props.effect.looping}
+          running={this.props.effect.playing}
         />
       </div>
     );
@@ -97,6 +104,11 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
 
   private updateVolume(volume: number): void {
     this.setState({ ...this.state, volume: volume });
+    this.props.onEffectAction({
+      effectId: this.props.effect.id,
+      type: "change_volume",
+      numericValue: volume,
+    });
   }
 
   private sendToggleMute(): void {
@@ -115,10 +127,15 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
   }
 
   private sendStop(): void {
-    this.props.onEffectAction({
-      effectId: this.props.effect.id,
-      type: "stop",
-    });
+    if (!this.state.stopEnabled) {
+      this.setStopEnabled(true);
+      setTimeout(this.setStopEnabled.bind(this, false), 2000);
+    } else {
+      this.props.onEffectAction({
+        effectId: this.props.effect.id,
+        type: "stop",
+      });
+    }
   }
 
   private sendToggleLoop(): void {
@@ -126,6 +143,10 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
       effectId: this.props.effect.id,
       type: "toggle_loop",
     });
+  }
+
+  private setStopEnabled(enabled: boolean): void {
+    this.setState({ ...this.state, stopEnabled: enabled });
   }
 }
 
