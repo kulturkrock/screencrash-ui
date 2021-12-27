@@ -3,7 +3,7 @@ import { ICoreConnection } from "./coreConnection";
 import { PdfViewer } from "./pdfViewer";
 import { StatusView } from "./statusView/statusView";
 import { Timeline } from "./timeline";
-import { INodeCollection, IEffect } from "./types";
+import { INodeCollection, IEffect, IEffectActionEvent } from "./types";
 
 import style from "../less/liveScreen.module.less";
 
@@ -57,7 +57,10 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       <div className={style.screen}>
         <div>
           <div className={style.statusViewContainer}>
-            <StatusView effects={this.state.effects} />
+            <StatusView
+              effects={this.state.effects}
+              onEffectAction={this.handleEffectAction.bind(this)}
+            />
           </div>
           <div className={style.settingsBox}>
             {this.getSettings().map((text, index) => (
@@ -100,6 +103,10 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     });
 
     this.props.coreConnection.handshake();
+  }
+
+  private handleEffectAction(event: IEffectActionEvent): void {
+    this.props.coreConnection.handleEffectAction(event);
   }
 
   private handleKey(event: KeyboardEvent) {

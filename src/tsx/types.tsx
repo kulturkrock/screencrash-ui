@@ -21,9 +21,29 @@ interface IEffect {
   name: string;
   type: EffectType;
   duration?: number;
+  currentTime?: number;
+  lastSync?: number;
+  playing?: boolean;
+  looping?: boolean;
+  muted?: boolean;
+  volume?: number;
+}
+
+interface IEffectActionEvent {
+  effectId: number;
+  type: string;
+  value?: string;
+  numericValue?: number;
 }
 
 // Empty object, since there is no built-in for it
 type IEmpty = Record<never, never>;
 
-export { INode, INodeCollection, IEffect, EffectType, IEmpty };
+export {
+  INode,
+  INodeCollection,
+  IEffect,
+  EffectType,
+  IEffectActionEvent,
+  IEmpty,
+};
