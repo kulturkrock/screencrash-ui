@@ -12,5 +12,5 @@ module.exports = {
   server: {
     baseDir: path.resolve(__dirname, "./dist"),
   },
-  startPath: `/?core=${process.env.CORE || "fake"}`,
+  startPath: `/?core=${encodeURIComponent(process.env.CORE) || "fake"}`,
 };
