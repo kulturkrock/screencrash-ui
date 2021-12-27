@@ -3,17 +3,19 @@
 
 default: build
 
-init:
+node_modules: package.json package-lock.json
 	npm ci
 
-build: init
+init: node_modules
+
+build: node_modules
 	npm run build
 
-watch: init
+watch: node_modules
 	npm run watch
 
-serve: init
+serve: node_modules
 	npm run serve
 
-dev: init
+dev: node_modules
 	npm run dev

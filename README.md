@@ -35,7 +35,7 @@ When using `make`, installing of dependencies will be done automatically and `ma
 
 The easiest way to get started should be to run `make dev`, which will
 
-1.  install dependencies,
+1.  install dependencies if needed,
 2.  build the project,
 3.  start a server for the project,
 4.  open a web browser to the project,
