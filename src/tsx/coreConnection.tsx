@@ -4,7 +4,7 @@ import {
   EffectType,
   IEffectActionEvent,
 } from "./types";
-import script from "../../sample_data/script.pdf";
+import script from "RESOURCES/script.pdf";
 
 const eventNames = {
   nodes: "nodes",

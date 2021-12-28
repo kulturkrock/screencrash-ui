@@ -68,8 +68,12 @@ module.exports = {
       },
     },
   },
-
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx", ".less"],
+    alias: {
+      RESOURCES:
+        process.env.SCREENCRASH_RESOURCES ||
+        path.resolve(__dirname, "sample_data"),
+    },
   },
 };
