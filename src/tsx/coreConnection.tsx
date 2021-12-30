@@ -4,6 +4,7 @@ import {
   EffectType,
   IEffectActionEvent,
 } from "./types";
+import { LiveAction } from "./coreMessages";
 import script from "../../sample_data/script.pdf";
 
 const eventNames = {
@@ -51,7 +52,6 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
   private nodes: INodeCollection;
   private history: string[];
   private script: string;
-  private currentEffectId: number;
   private effectStarts: { [nodeId: string]: IEffect[] };
   private activeEffects: IEffect[];
   private lastEffectUpdate: number;
@@ -83,12 +83,11 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     };
     this.history = ["1126"];
     this.script = script;
-    this.currentEffectId = 0;
     this.effectStarts = {
       "11": [
-        { id: 0, name: "someaudio", type: EffectType.Other },
+        { entityId: "0", name: "someaudio", type: EffectType.Other },
         {
-          id: 7,
+          entityId: "7",
           name: "moreaudio",
           type: EffectType.Audio,
           duration: 20,
@@ -97,7 +96,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
         },
       ],
       "160": [],
-      "1126": [{ id: 9, name: "seagull.mp4", type: EffectType.Other }],
+      "1126": [{ entityId: "9", name: "seagull.mp4", type: EffectType.Other }],
     };
     this.activeEffects = [];
     this.lastEffectUpdate = 0;
@@ -133,16 +132,17 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
 
       const newCurrentNodeId = this.history[this.history.length - 1];
       this.effectStarts[newCurrentNodeId].forEach((effect) => {
+        const randomStr = (Math.random() + 1).toString(36).substring(7);
+        const newEntityId = effect.entityId + "_" + randomStr;
         const newEffect = {
           ...effect,
-          id: this.currentEffectId,
+          entityId: newEntityId,
           lastSync: Date.now(),
         };
-        this.currentEffectId++;
         this.activeEffects.push(newEffect);
         if (!newEffect.duration) {
           setTimeout(
-            this.removeEffect.bind(this, newEffect.id),
+            this.removeEffect.bind(this, newEffect.entityId),
             2000 + Math.random() * 3000,
           );
         }
@@ -153,12 +153,12 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
 
   public handleEffectAction(event: IEffectActionEvent): void {
     const effectIndex = this.activeEffects.findIndex(
-      (effect) => effect.id == event.effectId,
+      (effect) => effect.entityId == event.entityId,
     );
 
     if (effectIndex >= 0) {
       let changed = false;
-      switch (event.type) {
+      switch (event.action_type) {
         case "play":
           this.activeEffects[effectIndex].playing = true;
           changed = true;
@@ -186,7 +186,7 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
           changed = false;
           break;
         default:
-          console.log(`Unhandled effect action event: ${event.type}`);
+          console.log(`Unhandled effect action event: ${event.action_type}`);
           break;
       }
 
@@ -230,9 +230,9 @@ class DummyCoreConnection extends EventTarget implements ICoreConnection {
     );
   }
 
-  private removeEffect(effectId: number): void {
+  private removeEffect(entityId: string): void {
     const index = this.activeEffects.findIndex(
-      (effect) => effect.id === effectId,
+      (effect) => effect.entityId === entityId,
     );
     this.activeEffects.splice(index, 1);
     this.sendEffectsChangedEvent();
@@ -278,6 +278,11 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
             new CustomEvent(eventNames.script, { detail: data }),
           );
           break;
+        case "effects":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.effects, { detail: data }),
+          );
+          break;
         default:
           console.error(`Unknown message from Core: ${messageType}`);
       }
@@ -289,7 +294,47 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
   }
 
   public handleEffectAction(event: IEffectActionEvent): void {
-    console.log(`TODO: Should handle effect action ${JSON.stringify(event)}`);
+    const message: LiveAction = {
+      messageType: "component-action",
+      target_component: event.media_type,
+      cmd: "",
+      assets: [],
+      params: {},
+    };
+
+    switch (event.action_type) {
+      case "play":
+        message.cmd = "play";
+        message.params["entityId"] = event.entityId;
+        break;
+      case "pause":
+        message.cmd = "pause";
+        message.params["entityId"] = event.entityId;
+        break;
+      case "stop":
+        message.cmd = "stop";
+        message.params["entityId"] = event.entityId;
+        break;
+      case "toggle_loop":
+        console.log("TODO: Toggle loop");
+        break;
+      case "toggle_mute":
+        message.cmd = "toggle_mute";
+        message.params["entityId"] = event.entityId;
+        break;
+      case "change_volume":
+        message.cmd = "set_volume";
+        message.params["entityId"] = event.entityId;
+        message.params["volume"] = event.numericValue;
+        break;
+      default:
+        console.log(`Unhandled effect action event: ${event.action_type}`);
+        break;
+    }
+
+    if (message.cmd !== "") {
+      this.socket.send(JSON.stringify(message));
+    }
   }
 }
 

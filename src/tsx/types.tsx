@@ -17,7 +17,7 @@ enum EffectType {
 }
 
 interface IEffect {
-  id: number;
+  entityId: string;
   name: string;
   type: EffectType;
   duration?: number;
@@ -30,8 +30,9 @@ interface IEffect {
 }
 
 interface IEffectActionEvent {
-  effectId: number;
-  type: string;
+  entityId: string;
+  action_type: string;
+  media_type: string;
   value?: string;
   numericValue?: number;
 }
