@@ -4,7 +4,7 @@ import {
   EffectType,
   IEffectActionEvent,
 } from "./types";
-import { LiveAction } from "./coreMessages";
+import { OnTheFlyAction } from "./coreMessages";
 import script from "../../sample_data/script.pdf";
 
 const eventNames = {
@@ -294,7 +294,7 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
   }
 
   public handleEffectAction(event: IEffectActionEvent): void {
-    const message: LiveAction = {
+    const message: OnTheFlyAction = {
       messageType: "component-action",
       target_component: event.media_type,
       cmd: "",

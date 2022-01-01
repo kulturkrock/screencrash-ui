@@ -1,4 +1,4 @@
-interface LiveAction {
+interface OnTheFlyAction {
   messageType: string;
   target_component: string;
   cmd: string;
@@ -6,4 +6,4 @@ interface LiveAction {
   params: { [key: string]: unknown };
 }
 
-export { LiveAction };
+export { OnTheFlyAction };
