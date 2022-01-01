@@ -14,6 +14,7 @@ enum EffectType {
   Audio,
   Video,
   Image,
+  WebPage,
 }
 
 interface IEffect {
@@ -27,6 +28,7 @@ interface IEffect {
   looping?: boolean;
   muted?: boolean;
   volume?: number;
+  visible?: boolean;
 }
 
 interface IEffectActionEvent {
