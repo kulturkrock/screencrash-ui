@@ -15,7 +15,7 @@ class StatusView extends React.PureComponent<IProps, IEmpty> {
       <div className={style.box}>
         {this.props.effects.map((effect) => (
           <StatusEffect
-            key={effect.id}
+            key={effect.entityId}
             effect={effect}
             onEffectAction={this.props.onEffectAction}
           />

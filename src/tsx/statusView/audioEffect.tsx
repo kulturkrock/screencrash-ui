@@ -65,7 +65,7 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
           >
             <MdStop />
           </div>
-          <div className={style.volumeValue}>{this.state.volume}</div>
+          <div className={style.volumeValue}>{this.props.effect.volume}</div>
           <input
             className={`${style.volumeInput} ${style.slider}`}
             type="range"
@@ -105,24 +105,27 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
   private updateVolume(volume: number): void {
     this.setState({ ...this.state, volume: volume });
     this.props.onEffectAction({
-      effectId: this.props.effect.id,
-      type: "change_volume",
+      entityId: this.props.effect.entityId,
+      action_type: "change_volume",
+      media_type: "audio",
       numericValue: volume,
     });
   }
 
   private sendToggleMute(): void {
     this.props.onEffectAction({
-      effectId: this.props.effect.id,
-      type: "toggle_mute",
+      entityId: this.props.effect.entityId,
+      action_type: "toggle_mute",
+      media_type: "audio",
     });
   }
 
   private sendPlayPause(): void {
     const eventType = this.props.effect.playing ? "pause" : "play";
     this.props.onEffectAction({
-      effectId: this.props.effect.id,
-      type: eventType,
+      entityId: this.props.effect.entityId,
+      action_type: eventType,
+      media_type: "audio",
     });
   }
 
@@ -132,16 +135,18 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
       setTimeout(this.setStopEnabled.bind(this, false), 2000);
     } else {
       this.props.onEffectAction({
-        effectId: this.props.effect.id,
-        type: "stop",
+        entityId: this.props.effect.entityId,
+        action_type: "stop",
+        media_type: "audio",
       });
     }
   }
 
   private sendToggleLoop(): void {
     this.props.onEffectAction({
-      effectId: this.props.effect.id,
-      type: "toggle_loop",
+      entityId: this.props.effect.entityId,
+      action_type: "toggle_loop",
+      media_type: "audio",
     });
   }
 
