@@ -29,6 +29,7 @@ interface IEffect {
   muted?: boolean;
   volume?: number;
   visible?: boolean;
+  currentImage?: string;
 }
 
 interface IEffectActionEvent {
