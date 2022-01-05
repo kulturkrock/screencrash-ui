@@ -4,6 +4,7 @@ import { IEmpty, IEffect, EffectType, IEffectActionEvent } from "../types";
 import style from "../../less/statusView.module.less";
 import { AudioEffect } from "./audioEffect";
 import { VideoEffect } from "./videoEffect";
+import { WebEffect } from "./webEffect";
 
 interface IProps {
   effect: IEffect;
@@ -30,6 +31,8 @@ function EffectContent(props: IProps) {
       return <VideoEffect {...props} />;
     case EffectType.Image:
       return ImageEffectContent(props);
+    case EffectType.WebPage:
+      return <WebEffect {...props} />;
     default:
       return UnknownEffectContent(props);
   }
