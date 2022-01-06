@@ -36,7 +36,11 @@ class VideoEffect extends React.PureComponent<IProps, IState> {
 
   public render(): JSX.Element {
     return (
-      <div>
+      <div className={style.videoContainer}>
+        <img
+          src={this.props.effect.currentImage}
+          className={style.videoImage}
+        />
         <div className={style.videoInfo}>
           <div className={style.videoName}>{this.props.effect.name}</div>
           <div
