@@ -18,8 +18,6 @@ An optional dependency on GNU Make exists, in that a simple `Makefile` is provid
 
 ## Setup and Commands
 
-Before starting, get a copy of `Apornas ö 2020-01-11.pdf` from the Drive and put it under `sample_data/script.pdf`.
-
 The following commands are available, and should be run from the repository root folder (same folder as the `Makefile` and `package.json`).
 
 When using `make`, installing of dependencies will be done automatically and `make init` should not need to be run manually. However, when only using `npm` then `npm ci` must be run first in order to install the dependencies for the other commands.

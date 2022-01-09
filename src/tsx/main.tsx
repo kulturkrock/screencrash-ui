@@ -1,11 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import {
-  DummyCoreConnection,
-  RealCoreConnection,
-  ICoreConnection,
-} from "./coreConnection";
+import { RealCoreConnection, ICoreConnection } from "./coreConnection";
 import { LiveScreen } from "./liveScreen";
 import { IEmpty } from "./types";
 import style from "../less/main.module.less";
@@ -22,7 +18,7 @@ class Main extends React.PureComponent<IEmpty, IState> {
     const coreAddress = queryParams.get("core");
     this.state = {
       coreAddress,
-      coreConnection: this.getCoreConnection(coreAddress),
+      coreConnection: new RealCoreConnection(coreAddress),
     };
   }
 
@@ -49,14 +45,6 @@ class Main extends React.PureComponent<IEmpty, IState> {
         </div>
       </div>
     );
-  }
-
-  private getCoreConnection(address: string) {
-    if (address === "fake") {
-      return new DummyCoreConnection(address);
-    } else {
-      return new RealCoreConnection(address);
-    }
   }
 }
 
