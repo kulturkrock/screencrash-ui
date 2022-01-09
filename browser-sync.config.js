@@ -12,5 +12,7 @@ module.exports = {
   server: {
     baseDir: path.resolve(__dirname, "./dist"),
   },
-  startPath: `/?core=${encodeURIComponent(process.env.CORE) || "fake"}`,
+  startPath: `/?core=${encodeURIComponent(
+    process.env.CORE || "localhost:8001",
+  )}`,
 };
