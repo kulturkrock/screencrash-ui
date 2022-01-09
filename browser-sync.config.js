@@ -4,6 +4,7 @@ const path = require("path");
 
 module.exports = {
   files: path.resolve(__dirname, "./dist/**/*"),
+  ghostMode: false, // Don't mirror click events etc.
   injectChanges: true,
   logFileChanges: true,
   logLevel: "info",

@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import style from "../../less/statusView.module.less";
-import { IEffect, IEffectActionEvent } from "../types";
+import { EffectType, IEffect, IEffectActionEvent } from "../types";
 import { ProgressBar } from "./progressBar";
 
 import {
@@ -11,6 +11,8 @@ import {
   MdLoop,
   MdVolumeOff,
   MdVolumeUp,
+  MdOutlineImage,
+  MdOutlineHideImage,
 } from "react-icons/md";
 
 interface IState {
@@ -23,7 +25,7 @@ interface IProps {
   onEffectAction: (event: IEffectActionEvent) => void;
 }
 
-class AudioEffect extends React.PureComponent<IProps, IState> {
+class VideoEffect extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -34,23 +36,33 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
 
   public render(): JSX.Element {
     return (
-      <div>
-        <div className={style.audioInfo}>
-          <div className={style.audioName}>{this.props.effect.name}</div>
+      <div className={style.videoContainer}>
+        <img
+          src={this.props.effect.currentImage}
+          className={style.videoImage}
+        />
+        <div className={style.videoInfo}>
+          <div className={style.videoName}>{this.props.effect.name}</div>
           <div
-            className={`${style.audioAction} ${style.audioMute}`}
+            className={`${style.videoAction} ${style.videoMute} ${style.temporarilyDisabled}`}
             onClick={this.sendToggleMute.bind(this)}
           >
             {this.getMuteButton()}
           </div>
           <div
-            className={`${style.audioAction} ${style.audioPlayPause}`}
+            className={`${style.videoAction} ${style.videoPlayPause}`}
             onClick={this.sendPlayPause.bind(this)}
           >
             {this.getPlayPauseButton()}
           </div>
           <div
-            className={`${style.audioAction} ${style.audioLoop} ${
+            className={`${style.videoAction} ${style.videoHide}`}
+            onClick={this.sendToggleHidden.bind(this)}
+          >
+            {this.getHideButton()}
+          </div>
+          <div
+            className={`${style.videoAction} ${style.videoLoop} ${
               this.props.effect.looping ? style.looping : ""
             }`}
             onClick={this.sendToggleLoop.bind(this)}
@@ -58,16 +70,18 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
             <MdLoop />
           </div>
           <div
-            className={`${style.audioAction} ${style.audioStop} ${
-              this.state.stopEnabled ? style.audioStopEnabled : ""
+            className={`${style.videoAction} ${style.videoStop} ${
+              this.state.stopEnabled ? style.videoStopEnabled : ""
             }`}
             onClick={this.sendStop.bind(this)}
           >
             <MdStop />
           </div>
-          <div className={style.volumeValue}>{this.props.effect.volume}</div>
+          <div className={`${style.volumeValue} ${style.temporarilyRemoved}`}>
+            {this.props.effect.volume}
+          </div>
           <input
-            className={`${style.volumeInput} ${style.slider}`}
+            className={`${style.volumeInput} ${style.slider} ${style.temporarilyRemoved}`}
             type="range"
             min="0"
             max="100"
@@ -102,13 +116,43 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
     }
   }
 
+  private getHideButton(): JSX.Element {
+    if (this.props.effect.visible) {
+      return <MdOutlineImage />;
+    } else {
+      return <MdOutlineHideImage />;
+    }
+  }
+
+  private effectTypeAsString(): string {
+    switch (this.props.effect.type) {
+      case EffectType.Video:
+        return "video";
+      case EffectType.Image:
+        return "image";
+      case EffectType.WebPage:
+        return "web";
+      default:
+        return "unknown";
+    }
+  }
+
   private updateVolume(volume: number): void {
     this.setState({ ...this.state, volume: volume });
     this.props.onEffectAction({
       entityId: this.props.effect.entityId,
       action_type: "change_volume",
-      media_type: "audio",
+      media_type: this.effectTypeAsString(),
       numericValue: volume,
+    });
+  }
+
+  private sendToggleHidden(): void {
+    const eventType = this.props.effect.visible ? "hide" : "show";
+    this.props.onEffectAction({
+      entityId: this.props.effect.entityId,
+      action_type: eventType,
+      media_type: this.effectTypeAsString(),
     });
   }
 
@@ -116,7 +160,7 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
     this.props.onEffectAction({
       entityId: this.props.effect.entityId,
       action_type: "toggle_mute",
-      media_type: "audio",
+      media_type: this.effectTypeAsString(),
     });
   }
 
@@ -125,7 +169,7 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
     this.props.onEffectAction({
       entityId: this.props.effect.entityId,
       action_type: eventType,
-      media_type: "audio",
+      media_type: this.effectTypeAsString(),
     });
   }
 
@@ -136,8 +180,8 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
     } else {
       this.props.onEffectAction({
         entityId: this.props.effect.entityId,
-        action_type: "stop",
-        media_type: "audio",
+        action_type: "destroy",
+        media_type: this.effectTypeAsString(),
       });
     }
   }
@@ -146,7 +190,7 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
     this.props.onEffectAction({
       entityId: this.props.effect.entityId,
       action_type: "toggle_loop",
-      media_type: "audio",
+      media_type: this.effectTypeAsString(),
     });
   }
 
@@ -155,4 +199,4 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
   }
 }
 
-export { AudioEffect };
+export { VideoEffect };

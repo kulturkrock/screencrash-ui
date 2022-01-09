@@ -14,10 +14,11 @@ enum EffectType {
   Audio,
   Video,
   Image,
+  WebPage,
 }
 
 interface IEffect {
-  id: number;
+  entityId: string;
   name: string;
   type: EffectType;
   duration?: number;
@@ -27,11 +28,14 @@ interface IEffect {
   looping?: boolean;
   muted?: boolean;
   volume?: number;
+  visible?: boolean;
+  currentImage?: string;
 }
 
 interface IEffectActionEvent {
-  effectId: number;
-  type: string;
+  entityId: string;
+  action_type: string;
+  media_type: string;
   value?: string;
   numericValue?: number;
 }

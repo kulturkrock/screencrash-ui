@@ -3,6 +3,9 @@ import * as React from "react";
 import { IEmpty, IEffect, EffectType, IEffectActionEvent } from "../types";
 import style from "../../less/statusView.module.less";
 import { AudioEffect } from "./audioEffect";
+import { ImageEffect } from "./imageEffect";
+import { VideoEffect } from "./videoEffect";
+import { WebEffect } from "./webEffect";
 
 interface IProps {
   effect: IEffect;
@@ -26,9 +29,11 @@ function EffectContent(props: IProps) {
     case EffectType.Audio:
       return <AudioEffect {...props} />;
     case EffectType.Video:
-      return VideoEffectContent(props);
+      return <VideoEffect {...props} />;
     case EffectType.Image:
-      return ImageEffectContent(props);
+      return <ImageEffect {...props} />;
+    case EffectType.WebPage:
+      return <WebEffect {...props} />;
     default:
       return UnknownEffectContent(props);
   }
@@ -44,14 +49,6 @@ function UnknownEffectContent(props: IProps): JSX.Element {
 
 function BaseEffectContent(props: IProps): JSX.Element {
   return <div className={style.textArea}>{props.effect.name}</div>;
-}
-
-function ImageEffectContent(props: IProps): JSX.Element {
-  return <div className={style.textArea}>{props.effect.name} [IMAGE]</div>;
-}
-
-function VideoEffectContent(props: IProps): JSX.Element {
-  return <div className={style.textArea}>{props.effect.name} [VIDEO]</div>;
 }
 
 export { StatusEffect };

@@ -48,9 +48,16 @@ class ProgressBar extends React.PureComponent<IProps, IState> {
 
   public updateTime(): void {
     const now = Date.now();
+    let currentTime = this.state.currentTime;
+    let lastUpdated = this.state.lastUpdated;
+    if (this.state.lastUpdated < this.props.lastUpdated) {
+      currentTime = this.props.currentTime;
+      lastUpdated = this.props.lastUpdated;
+    }
+
     if (this.props.running) {
-      const timeDiff = now - this.state.lastUpdated;
-      let newTime = this.state.currentTime + timeDiff / 1000;
+      const timeDiff = now - lastUpdated;
+      let newTime = currentTime + timeDiff / 1000;
       if (this.props.looping) {
         newTime = newTime % this.props.duration;
       } else {
