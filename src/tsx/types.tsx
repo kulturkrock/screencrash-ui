@@ -1,5 +1,9 @@
+interface INodeChoice {
+  node: string;
+  description: string;
+}
 interface INode {
-  next: string;
+  next: string | INodeChoice[];
   prompt: string;
   pdfPage: number;
   pdfLocationOnPage: number;
@@ -44,6 +48,7 @@ interface IEffectActionEvent {
 type IEmpty = Record<never, never>;
 
 export {
+  INodeChoice,
   INode,
   INodeCollection,
   IEffect,
