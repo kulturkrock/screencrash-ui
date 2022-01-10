@@ -4,8 +4,6 @@ import * as d3 from "d3";
 import { INodeCollection, INodeChoice } from "./types";
 import style from "../less/timeline.module.less";
 
-const CHOICE_KEYS = ["a", "b", "c", "d"];
-
 const VIEWBOX_WIDTH = 200;
 const LEFT_MARGIN = 30;
 
@@ -23,6 +21,7 @@ interface IProps {
   nodes: INodeCollection;
   history: string[];
   focusY: number;
+  choiceKeys: string[];
 }
 
 interface IState {
@@ -182,7 +181,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .classed(style.promptText, true)
             .text(({ prompt }) => prompt);
 
-          CHOICE_KEYS.forEach((key, i) => {
+          this.props.choiceKeys.forEach((key, i) => {
             const subGroup = g.filter(
               ({ next }) => Array.isArray(next) && next.length > i,
             );
@@ -255,7 +254,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2);
 
-          CHOICE_KEYS.forEach((key, i) => {
+          this.props.choiceKeys.forEach((key, i) => {
             update
               .select(`#line-choice-${key}`)
               .transition(transition)

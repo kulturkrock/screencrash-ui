@@ -17,6 +17,7 @@ interface ICoreConnection extends EventTarget {
   // UI-initiated actions
   handshake(): void;
   nextNode(): void;
+  choosePath(choiceIndex: number): void;
   handleEffectAction(event: IEffectActionEvent): void;
 
   // Events
@@ -90,6 +91,12 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
 
   public nextNode(): void {
     this.socket.send(JSON.stringify({ messageType: "next-node" }));
+  }
+
+  public choosePath(choiceIndex: number): void {
+    this.socket.send(
+      JSON.stringify({ messageType: "choose-path", choiceIndex }),
+    );
   }
 
   public handleEffectAction(event: IEffectActionEvent): void {

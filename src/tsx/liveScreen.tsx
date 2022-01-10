@@ -7,6 +7,9 @@ import { INodeCollection, IEffect, IEffectActionEvent } from "./types";
 
 import style from "../less/liveScreen.module.less";
 
+// If we need more choices than this, we can add more keys here
+const CHOICE_KEYS = ["z", "x", "c", "v"];
+
 interface IProps {
   coreConnection: ICoreConnection;
 }
@@ -74,6 +77,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
           nodes={this.state.nodes}
           history={this.state.history}
           focusY={200}
+          choiceKeys={CHOICE_KEYS}
         />
         <PdfViewer
           script={this.state.script}
@@ -116,6 +120,9 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         this.props.coreConnection.nextNode();
       } else if (event.key === "s") {
         this.setState({ autoscrollScript: !this.state.autoscrollScript });
+      } else if (CHOICE_KEYS.includes(event.key)) {
+        const choiceIndex = CHOICE_KEYS.indexOf(event.key);
+        this.props.coreConnection.choosePath(choiceIndex);
       }
     }
   }
