@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d3 from "d3";
 
-import { INodeCollection } from "./types";
+import { INodeCollection, INodeChoice } from "./types";
 import style from "../less/timeline.module.less";
 
 const VIEWBOX_WIDTH = 200;
@@ -10,6 +10,10 @@ const LEFT_MARGIN = 30;
 const NODE_SPACING = 40;
 const NODE_RADIUS = 5;
 
+const CHOICE_SPACING = 25;
+const CHOICE_INDENT = 10;
+const CHOICE_CURVITUDE = 25;
+
 const CURRENT_NODE_FILL = "wheat";
 const BACKGROUND_COLOR = "rgb(75, 14, 14)";
 
@@ -17,6 +21,7 @@ interface IProps {
   nodes: INodeCollection;
   history: string[];
   focusY: number;
+  choiceKeys: string[];
 }
 
 interface IState {
@@ -70,7 +75,6 @@ class Timeline extends React.PureComponent<IProps, IState> {
     const visibleNodes = history
       .slice(-nodesBefore - 1, -1)
       .map((id) => ({ id, tense: "past", ...nodes[id] }));
-
     if (history.length > 0) {
       // Show the current node
       const currentId = history[history.length - 1];
@@ -79,10 +83,10 @@ class Timeline extends React.PureComponent<IProps, IState> {
         tense: "present",
         ...nodes[currentId],
       });
-      // Show a few nodes into the future
+      // Show a few nodes into the future, or until we reach a branch point
       for (let step = 0; step < nodesAfter; step++) {
         const nextId = visibleNodes[visibleNodes.length - 1].next;
-        if (nextId !== undefined) {
+        if (typeof nextId === "string") {
           visibleNodes.push({ id: nextId, tense: "future", ...nodes[nextId] });
         }
       }
@@ -103,12 +107,9 @@ class Timeline extends React.PureComponent<IProps, IState> {
       endX: number;
       endY: number;
     }[] = [];
-    nodesWithPosition.forEach((node) => {
-      const nextNode = nodesWithPosition.find(
-        ({ id, distanceFromStart }) =>
-          id === node.next && distanceFromStart === node.distanceFromStart + 1,
-      );
-      if (nextNode) {
+    nodesWithPosition.forEach((node, i) => {
+      if (i < nodesWithPosition.length - 1) {
+        const nextNode = nodesWithPosition[i + 1];
         lines.push({
           id: `${node.id}:${node.distanceFromStart}-${nextNode.id}:${nextNode.distanceFromStart}`,
           startX: node.x,
@@ -122,12 +123,13 @@ class Timeline extends React.PureComponent<IProps, IState> {
     // Draw the lines
     d3.select(`#${this.state.id}`)
       .select("svg")
-      .selectAll("line")
+      .selectAll("#node-line")
       .data(lines, ({ id }) => id)
       .join(
         (enter) =>
           enter
             .append("line")
+            .attr("id", "node-line")
             .attr("x1", ({ startX }) => startX)
             .attr("y1", ({ startY }) => startY)
             .attr("x2", ({ endX }) => endX)
@@ -160,6 +162,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
         (enter) => {
           const g = enter.append("g");
           g.append("circle")
+            .attr("id", "node")
             .attr("cx", ({ x }) => x)
             .attr("cy", ({ y }) => y)
             .attr("r", NODE_RADIUS)
@@ -169,6 +172,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
               tense === "present" ? CURRENT_NODE_FILL : BACKGROUND_COLOR,
             );
           g.append("foreignObject")
+            .attr("id", "prompt")
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2)
             .attr("width", ({ x }) => VIEWBOX_WIDTH - x - NODE_RADIUS)
@@ -176,11 +180,67 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .append("xhtml:div")
             .classed(style.promptText, true)
             .text(({ prompt }) => prompt);
+
+          this.props.choiceKeys.forEach((key, i) => {
+            const subGroup = g.filter(
+              ({ next }) => Array.isArray(next) && next.length > i,
+            );
+            subGroup
+              .append("circle")
+              .attr("id", `circle-choice-${key}`)
+              .attr("cx", ({ x }) => x + CHOICE_INDENT)
+              .attr("cy", ({ y }) => y + CHOICE_SPACING * (i + 1))
+              .attr("r", NODE_RADIUS)
+              .classed(style.node, true)
+              .attr("opacity", ({ tense }) =>
+                tense === "present" || tense === "future" ? 1 : 0,
+              )
+              .attr("fill", BACKGROUND_COLOR);
+            subGroup
+              .append("foreignObject")
+              .attr("id", `text-choice-${key}`)
+              .attr("x", ({ x }) => x + CHOICE_INDENT + NODE_RADIUS)
+              .attr(
+                "y",
+                ({ y }) => y + CHOICE_SPACING * (i + 1) - CHOICE_SPACING / 2,
+              )
+              .attr(
+                "width",
+                ({ x }) => VIEWBOX_WIDTH - x - (CHOICE_INDENT + NODE_RADIUS),
+              )
+              .attr("height", CHOICE_SPACING)
+              .attr("opacity", ({ tense }) =>
+                tense === "present" || tense === "future" ? 1 : 0,
+              )
+              .append("xhtml:div")
+              .classed(style.promptText, true)
+              .text(
+                ({ next }) =>
+                  `[${key}]: ${(next as INodeChoice[])[i].description}`,
+              );
+            subGroup
+              .append("path")
+              .attr("id", `line-choice-${key}`)
+              .attr(
+                "d",
+                ({ x, y }) =>
+                  `M ${x} ${y} ` +
+                  `C ${x} ${y + CHOICE_CURVITUDE * (i + 1)}, ` +
+                  `${x} ${y + CHOICE_CURVITUDE * (i + 1)}, ` +
+                  `${x + CHOICE_INDENT} ${y + CHOICE_SPACING * (i + 1)}`,
+              )
+              .classed(style.line, true)
+              .attr("fill", "none")
+              .attr("opacity", ({ tense }) =>
+                tense === "present" || tense === "future" ? 1 : 0,
+              )
+              .lower();
+          });
           return g;
         },
         (update) => {
           update
-            .select("circle")
+            .select("#node")
             .classed(style.currentNode, ({ tense }) => tense === "present")
             .transition(transition)
             .attr("cx", ({ x }) => x)
@@ -189,10 +249,46 @@ class Timeline extends React.PureComponent<IProps, IState> {
               tense === "present" ? CURRENT_NODE_FILL : BACKGROUND_COLOR,
             );
           update
-            .select("foreignObject")
+            .select("#prompt")
             .transition(transition)
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2);
+
+          this.props.choiceKeys.forEach((key, i) => {
+            update
+              .select(`#line-choice-${key}`)
+              .transition(transition)
+              .attr(
+                "d",
+                ({ x, y }) =>
+                  `M ${x} ${y} ` +
+                  `C ${x} ${y + CHOICE_CURVITUDE * (i + 1)}, ` +
+                  `${x} ${y + CHOICE_CURVITUDE * (i + 1)}, ` +
+                  `${x + CHOICE_INDENT} ${y + CHOICE_SPACING * (i + 1)}`,
+              )
+              .attr("opacity", ({ tense }) =>
+                tense === "present" || tense === "future" ? 1 : 0,
+              );
+            update
+              .select(`#circle-choice-${key}`)
+              .transition(transition)
+              .attr("cx", ({ x }) => x + CHOICE_INDENT)
+              .attr("cy", ({ y }) => y + CHOICE_SPACING * (i + 1))
+              .attr("opacity", ({ tense }) =>
+                tense === "present" || tense === "future" ? 1 : 0,
+              );
+            update
+              .select(`#text-choice-${key}`)
+              .transition(transition)
+              .attr("x", ({ x }) => x + CHOICE_INDENT + NODE_RADIUS)
+              .attr(
+                "y",
+                ({ y }) => y + CHOICE_SPACING * (i + 1) - CHOICE_SPACING / 2,
+              )
+              .attr("opacity", ({ tense }) =>
+                tense === "present" || tense === "future" ? 1 : 0,
+              );
+          });
           return update;
         },
       );
