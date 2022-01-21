@@ -44,6 +44,12 @@ interface IEffectActionEvent {
   numericValue?: number;
 }
 
+interface IComponentInfo {
+  componentId: string;
+  componentName: string;
+  status: string;
+}
+
 // Empty object, since there is no built-in for it
 type IEmpty = Record<never, never>;
 
@@ -54,5 +60,6 @@ export {
   IEffect,
   EffectType,
   IEffectActionEvent,
+  IComponentInfo,
   IEmpty,
 };

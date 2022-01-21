@@ -3,7 +3,12 @@ import { ICoreConnection } from "./coreConnection";
 import { PdfViewer } from "./pdfViewer";
 import { StatusView } from "./statusView/statusView";
 import { Timeline } from "./timeline";
-import { INodeCollection, IEffect, IEffectActionEvent } from "./types";
+import {
+  INodeCollection,
+  IEffect,
+  IEffectActionEvent,
+  IComponentInfo,
+} from "./types";
 
 import style from "../less/liveScreen.module.less";
 
@@ -17,6 +22,7 @@ interface IState {
   nodes: INodeCollection;
   history: string[];
   script: string;
+  components: IComponentInfo[];
   effects: IEffect[];
   autoscrollScript: boolean;
 }
@@ -28,6 +34,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       nodes: {},
       history: [],
       script: null,
+      components: [],
       effects: [],
       autoscrollScript: true,
     };
@@ -50,6 +57,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         (this.state.autoscrollScript ? "PÅ" : "AV") +
         " (växla med S)",
     );
+    settings.push(`${this.state.components.length} components connected`);
     return settings;
   }
 
@@ -101,6 +109,9 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     });
     this.props.coreConnection.addEventListener("script", (event) => {
       this.setState({ script: event.detail });
+    });
+    this.props.coreConnection.addEventListener("components", (event) => {
+      this.setState({ components: event.detail });
     });
     this.props.coreConnection.addEventListener("effects", (event) => {
       this.setState({ effects: event.detail });
