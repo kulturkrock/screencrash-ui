@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { IEmpty, IEffect, EffectType, IEffectActionEvent } from "../types";
-import style from "../../less/statusView.module.less";
+import style from "../../less/effectView.module.less";
 import { AudioEffect } from "./audioEffect";
 import { ImageEffect } from "./imageEffect";
 import { VideoEffect } from "./videoEffect";

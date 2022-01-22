@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ICoreConnection } from "./coreConnection";
 import { PdfViewer } from "./pdfViewer";
-import { StatusView } from "./statusView/statusView";
+import { StatusView } from "./statusView";
 import { Timeline } from "./timeline";
 import {
   INodeCollection,
@@ -57,7 +57,6 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         (this.state.autoscrollScript ? "PÅ" : "AV") +
         " (växla med S)",
     );
-    settings.push(`${this.state.components.length} components connected`);
     return settings;
   }
 
@@ -71,6 +70,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
             <StatusView
               effects={this.state.effects}
               onEffectAction={this.handleEffectAction.bind(this)}
+              components={this.state.components}
             />
           </div>
           <div className={style.settingsBox}>
