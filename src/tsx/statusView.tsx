@@ -5,7 +5,7 @@ import { ComponentView } from "./componentView";
 import { EffectView } from "./effectView/effectView";
 import { IComponentInfo, IEffect, IEffectActionEvent } from "./types";
 
-const availableTabs: string[] = ["Status", "Components"];
+const availableTabs: string[] = ["Effects", "Components"];
 
 interface IProps {
   effects: IEffect[];
@@ -57,7 +57,7 @@ class StatusView extends React.PureComponent<IProps, IState> {
 }
 
 function TabContent(propsData: IPropsTab): JSX.Element {
-  if (propsData.tabName === "Status") {
+  if (propsData.tabName === "Effects") {
     return (
       <EffectView
         effects={propsData.props.effects}
