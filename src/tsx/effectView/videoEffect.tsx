@@ -95,6 +95,7 @@ class VideoEffect extends React.PureComponent<IProps, IState> {
           lastUpdated={this.props.effect.lastSync}
           looping={this.props.effect.looping}
           running={this.props.effect.playing}
+          onClicked={this.setTimestamp.bind(this)}
         />
       </div>
     );
@@ -196,6 +197,15 @@ class VideoEffect extends React.PureComponent<IProps, IState> {
 
   private setStopEnabled(enabled: boolean): void {
     this.setState({ ...this.state, stopEnabled: enabled });
+  }
+
+  private setTimestamp(time: number): void {
+    this.props.onEffectAction({
+      entityId: this.props.effect.entityId,
+      action_type: "seek",
+      media_type: this.effectTypeAsString(),
+      numericValue: time,
+    });
   }
 }
 

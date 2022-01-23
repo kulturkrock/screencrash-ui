@@ -164,6 +164,11 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
         message.cmd = "refresh";
         message.params["entityId"] = event.entityId;
         break;
+      case "seek":
+        message.cmd = "seek";
+        message.params["entityId"] = event.entityId;
+        message.params["position"] = event.numericValue;
+        break;
       default:
         console.log(`Unhandled effect action event: ${event.action_type}`);
         break;
