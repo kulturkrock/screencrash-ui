@@ -119,11 +119,10 @@ class ProgressBar extends React.PureComponent<IProps, IState> {
     this.setState({ ...this.state, showMarker: false });
   }
 
-  public onMouseMove(event: MouseEvent): void {
-    const node = event.target as HTMLElement;
-    const rect = node.getBoundingClientRect();
-    const elementX = event.clientX - rect.x;
-    const time = this.props.duration * (elementX / rect.width);
+  public onMouseMove(event: React.MouseEvent<HTMLElement>): void {
+    const { x, width } = event.currentTarget.getBoundingClientRect();
+    const elementX = event.clientX - x;
+    const time = this.props.duration * (elementX / width);
     this.setState({
       ...this.state,
       markerTime: time,
