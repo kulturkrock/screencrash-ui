@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { IEffect, IEffectActionEvent, IEmpty } from "../types";
-import style from "../../less/statusView.module.less";
+import style from "../../less/effectView.module.less";
 import { StatusEffect } from "./statusEffect";
 
 interface IProps {
@@ -9,7 +9,7 @@ interface IProps {
   onEffectAction: (event: IEffectActionEvent) => void;
 }
 
-class StatusView extends React.PureComponent<IProps, IEmpty> {
+class EffectView extends React.PureComponent<IProps, IEmpty> {
   public render(): JSX.Element {
     return (
       <div className={style.box}>
@@ -25,4 +25,4 @@ class StatusView extends React.PureComponent<IProps, IEmpty> {
   }
 }
 
-export { StatusView };
+export { EffectView };

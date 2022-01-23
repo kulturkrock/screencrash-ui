@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import style from "../../less/statusView.module.less";
+import style from "../../less/effectView.module.less";
 import { EffectType, IEffect, IEffectActionEvent } from "../types";
 import { ProgressBar } from "./progressBar";
 

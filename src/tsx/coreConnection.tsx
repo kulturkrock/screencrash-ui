@@ -1,11 +1,17 @@
-import { INodeCollection, IEffect, IEffectActionEvent } from "./types";
 import { OnTheFlyAction } from "./coreMessages";
+import {
+  INodeCollection,
+  IEffect,
+  IEffectActionEvent,
+  IComponentInfo,
+} from "./types";
 
 const eventNames = {
   nodes: "nodes",
   history: "history",
   script: "script",
   effects: "effects",
+  components: "components",
 };
 
 /**
@@ -32,6 +38,10 @@ interface ICoreConnection extends EventTarget {
   addEventListener(
     event: "script",
     listener: (event: CustomEvent<string>) => void,
+  ): void;
+  addEventListener(
+    event: "components",
+    listener: (event: CustomEvent<IComponentInfo[]>) => void,
   ): void;
   addEventListener(
     event: "effects",
@@ -76,6 +86,11 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
         case "script":
           this.dispatchEvent(
             new CustomEvent(eventNames.script, { detail: data }),
+          );
+          break;
+        case "components":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.components, { detail: data }),
           );
           break;
         case "effects":

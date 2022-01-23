@@ -1,14 +1,9 @@
 import * as React from "react";
 
-import style from "../../less/statusView.module.less";
+import style from "../../less/effectView.module.less";
 import { IEffect, IEffectActionEvent } from "../types";
 
-import {
-  MdStop,
-  MdRefresh,
-  MdOutlineImage,
-  MdOutlineHideImage,
-} from "react-icons/md";
+import { MdStop, MdOutlineImage, MdOutlineHideImage } from "react-icons/md";
 
 interface IState {
   stopEnabled: boolean;
@@ -19,7 +14,7 @@ interface IProps {
   onEffectAction: (event: IEffectActionEvent) => void;
 }
 
-class WebEffect extends React.PureComponent<IProps, IState> {
+class ImageEffect extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -29,23 +24,17 @@ class WebEffect extends React.PureComponent<IProps, IState> {
 
   public render(): JSX.Element {
     return (
-      <div className={style.webInfo}>
-        <div className={style.webAddress}>{this.props.effect.name}</div>
+      <div className={style.imageInfo}>
+        <div className={style.imageName}>{this.props.effect.name}</div>
         <div
-          className={`${style.webAction}`}
+          className={`${style.imageAction}`}
           onClick={this.sendToggleHidden.bind(this)}
         >
           {this.getHideButton()}
         </div>
         <div
-          className={`${style.webAction}`}
-          onClick={this.sendRefreshPage.bind(this)}
-        >
-          <MdRefresh />
-        </div>
-        <div
-          className={`${style.webAction} ${style.webStop} ${
-            this.state.stopEnabled ? style.webStopEnabled : ""
+          className={`${style.imageAction} ${style.imageStop} ${
+            this.state.stopEnabled ? style.imageStopEnabled : ""
           }`}
           onClick={this.sendStop.bind(this)}
         >
@@ -68,15 +57,7 @@ class WebEffect extends React.PureComponent<IProps, IState> {
     this.props.onEffectAction({
       entityId: this.props.effect.entityId,
       action_type: eventType,
-      media_type: "web",
-    });
-  }
-
-  private sendRefreshPage(): void {
-    this.props.onEffectAction({
-      entityId: this.props.effect.entityId,
-      action_type: "refresh",
-      media_type: "web",
+      media_type: "image",
     });
   }
 
@@ -98,4 +79,4 @@ class WebEffect extends React.PureComponent<IProps, IState> {
   }
 }
 
-export { WebEffect };
+export { ImageEffect };
