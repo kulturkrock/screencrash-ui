@@ -5,9 +5,12 @@ import style from "../../less/effectView.module.less";
 interface IState {
   lastUpdated: number;
   currentTime: number;
+  showMarker: boolean;
+  markerTime: number;
 }
 
 interface IProps {
+  onClicked: (time: number) => void;
   currentTime: number;
   lastUpdated: number;
   duration: number;
@@ -23,6 +26,8 @@ class ProgressBar extends React.PureComponent<IProps, IState> {
     this.state = {
       currentTime: this.props.currentTime,
       lastUpdated: this.props.lastUpdated,
+      showMarker: false,
+      markerTime: 0,
     };
   }
 
@@ -36,7 +41,13 @@ class ProgressBar extends React.PureComponent<IProps, IState> {
 
   public render(): JSX.Element {
     return (
-      <div className={style.progressBarWrapper}>
+      <div
+        className={style.progressBarWrapper}
+        onMouseOver={this.onMouseOver.bind(this)}
+        onMouseOut={this.onMouseOut.bind(this)}
+        onMouseMove={this.onMouseMove.bind(this)}
+        onClick={this.onClick.bind(this)}
+      >
         <div
           className={style.progressBar}
           style={{ width: `${this.barWidth()}%` }}
@@ -50,9 +61,11 @@ class ProgressBar extends React.PureComponent<IProps, IState> {
     const now = Date.now();
     let currentTime = this.state.currentTime;
     let lastUpdated = this.state.lastUpdated;
+    let hasUpdateFromBackend = false;
     if (this.state.lastUpdated < this.props.lastUpdated) {
       currentTime = this.props.currentTime;
       lastUpdated = this.props.lastUpdated;
+      hasUpdateFromBackend = true;
     }
 
     if (this.props.running) {
@@ -70,7 +83,15 @@ class ProgressBar extends React.PureComponent<IProps, IState> {
         currentTime: newTime,
       });
     } else {
-      this.setState({ ...this.state, lastUpdated: now });
+      if (hasUpdateFromBackend) {
+        this.setState({
+          ...this.state,
+          lastUpdated: now,
+          currentTime: currentTime,
+        });
+      } else {
+        this.setState({ ...this.state, lastUpdated: now });
+      }
     }
   }
 
@@ -88,6 +109,30 @@ class ProgressBar extends React.PureComponent<IProps, IState> {
     }
 
     return Math.round((this.state.currentTime / this.props.duration) * 100);
+  }
+
+  public onMouseOver(): void {
+    this.setState({ ...this.state, showMarker: true });
+  }
+
+  public onMouseOut(): void {
+    this.setState({ ...this.state, showMarker: false });
+  }
+
+  public onMouseMove(event: React.MouseEvent<HTMLElement>): void {
+    const { x, width } = event.currentTarget.getBoundingClientRect();
+    const elementX = event.clientX - x;
+    const time = this.props.duration * (elementX / width);
+    this.setState({
+      ...this.state,
+      markerTime: time,
+    });
+  }
+
+  public onClick(): void {
+    if (this.state.showMarker) {
+      this.props.onClicked(this.state.markerTime);
+    }
   }
 }
 
