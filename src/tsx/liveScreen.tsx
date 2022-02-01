@@ -51,8 +51,15 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
   }
 
   private getSettings() {
-    const settings = ["Gå till nästa nod: spacebar"];
-    settings.push(
+    const settings = [
+      "Gå till nästa nod & kör actions: spacebar",
+      "Gå till föregående nod: Uppåt-pil",
+      "Gå till nästa nod: Neråt-pil",
+      "Kör actions: Enter",
+      "Multichoice + köra dess actions: z, x, c ...",
+      "Multichoice utan köra actions: Z, X, C ...",
+    ];
+    settings.unshift(
       "Autoscroll i manus är " +
         (this.state.autoscrollScript ? "PÅ" : "AV") +
         " (växla med S)",
@@ -128,12 +135,19 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     // Only accept keyboard shortcuts on first press and when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
       if (event.key === " ") {
-        this.props.coreConnection.nextNode();
+        this.props.coreConnection.nextNode(true);
+      } else if (event.key == "Up" || event.key == "ArrowUp") {
+        this.props.coreConnection.prevNode();
+      } else if (event.key == "Down" || event.key == "ArrowDown") {
+        this.props.coreConnection.nextNode(false);
+      } else if (event.key == "Enter") {
+        this.props.coreConnection.runActions();
       } else if (event.key === "s") {
         this.setState({ autoscrollScript: !this.state.autoscrollScript });
-      } else if (CHOICE_KEYS.includes(event.key)) {
-        const choiceIndex = CHOICE_KEYS.indexOf(event.key);
-        this.props.coreConnection.choosePath(choiceIndex);
+      } else if (CHOICE_KEYS.includes(event.key.toLowerCase())) {
+        const choiceIndex = CHOICE_KEYS.indexOf(event.key.toLowerCase());
+        const runActions = event.key !== event.key.toUpperCase();
+        this.props.coreConnection.choosePath(choiceIndex, runActions);
       }
     }
   }

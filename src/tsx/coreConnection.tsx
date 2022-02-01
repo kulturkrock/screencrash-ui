@@ -22,8 +22,10 @@ const eventNames = {
 interface ICoreConnection extends EventTarget {
   // UI-initiated actions
   handshake(): void;
-  nextNode(): void;
-  choosePath(choiceIndex: number): void;
+  prevNode(): void;
+  nextNode(runActions: boolean): void;
+  runActions(): void;
+  choosePath(choiceIndex: number, runActions: boolean): void;
   handleEffectAction(event: IEffectActionEvent): void;
 
   // Events
@@ -104,13 +106,21 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
     });
   }
 
-  public nextNode(): void {
-    this.socket.send(JSON.stringify({ messageType: "next-node" }));
+  public prevNode(): void {
+    this.socket.send(JSON.stringify({ messageType: "prev-node" }));
   }
 
-  public choosePath(choiceIndex: number): void {
+  public nextNode(runActions: boolean): void {
+    this.socket.send(JSON.stringify({ messageType: "next-node", runActions }));
+  }
+
+  public runActions(): void {
+    this.socket.send(JSON.stringify({ messageType: "run-actions" }));
+  }
+
+  public choosePath(choiceIndex: number, runActions: boolean): void {
     this.socket.send(
-      JSON.stringify({ messageType: "choose-path", choiceIndex }),
+      JSON.stringify({ messageType: "choose-path", choiceIndex, runActions }),
     );
   }
 
