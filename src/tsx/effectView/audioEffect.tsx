@@ -137,7 +137,7 @@ class AudioEffect extends React.PureComponent<IProps, IState> {
     } else {
       this.props.onEffectAction({
         entityId: this.props.effect.entityId,
-        action_type: "stop",
+        action_type: "destroy",
         media_type: "audio",
       });
     }
