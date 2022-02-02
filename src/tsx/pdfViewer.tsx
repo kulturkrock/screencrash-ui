@@ -29,6 +29,7 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
       numPages: 0,
       loadedPages: 0,
     };
+    this.handleKey = this.handleKey.bind(this);
   }
 
   public componentDidMount(): void {
@@ -40,6 +41,12 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
     this.setState({
       pdfWidth: width,
     });
+
+    document.addEventListener("keydown", this.handleKey);
+  }
+
+  public componentWillUnmount(): void {
+    document.removeEventListener("keydown", this.handleKey);
   }
 
   public componentDidUpdate(prevProps: IProps, prevState: IState): void {
@@ -61,6 +68,24 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
         this.props.currentLocationOnPage,
       );
     }
+  }
+
+  private handleKey(event: KeyboardEvent) {
+    // Only accept keyboard shortcuts when nothing is focused
+    if (document.activeElement === document.body) {
+      if (event.key === "PageUp") {
+        this.scrollVertical(-100);
+      } else if (event.key === "PageDown") {
+        this.scrollVertical(100);
+      }
+    }
+  }
+
+  private scrollVertical(amount: number) {
+    const container = document.getElementById(this.state.id);
+    container.scrollBy({
+      top: amount,
+    });
   }
 
   private scrollToLocation(page: number, locationOnPage: number): void {
@@ -89,7 +114,7 @@ class PdfViewer extends React.PureComponent<IProps, IState> {
               pageNumber={index + 1}
               width={this.state.pdfWidth}
               renderAnnotationLayer={false}
-              renderTextLayer={false}
+              renderTextLayer={true}
               onLoadSuccess={() => {
                 this.setState({ loadedPages: this.state.loadedPages + 1 });
               }}
