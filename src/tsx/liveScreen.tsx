@@ -10,6 +10,13 @@ import {
   IComponentInfo,
 } from "./types";
 
+import {
+  MdOutlineKeyboardReturn,
+  MdOutlineArrowDownward,
+  MdOutlineArrowUpward,
+  MdOutlineSpaceBar,
+} from "react-icons/md";
+
 import style from "../less/liveScreen.module.less";
 
 // If we need more choices than this, we can add more keys here
@@ -50,23 +57,6 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     document.removeEventListener("keydown", this.handleKey);
   }
 
-  private getSettings() {
-    const settings = [
-      "Gå till nästa nod & kör actions: spacebar",
-      "Gå till föregående nod: Uppåt-pil",
-      "Gå till nästa nod: Neråt-pil",
-      "Kör actions: Enter",
-      "Multichoice + köra dess actions: z, x, c ...",
-      "Multichoice utan köra actions: Z, X, C ...",
-    ];
-    settings.unshift(
-      "Autoscroll i manus är " +
-        (this.state.autoscrollScript ? "PÅ" : "AV") +
-        " (växla med S)",
-    );
-    return settings;
-  }
-
   public render(): JSX.Element {
     const currentNodeId = this.state.history[this.state.history.length - 1];
     const currentNode = this.state.nodes[currentNodeId];
@@ -80,13 +70,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
               components={this.state.components}
             />
           </div>
-          <div className={style.settingsBox}>
-            {this.getSettings().map((text, index) => (
-              <div className={style.textRow} key={index}>
-                {text}
-              </div>
-            ))}
-          </div>
+          <SettingsBox autoscrollScript={this.state.autoscrollScript} />
         </div>
         <Timeline
           nodes={this.state.nodes}
@@ -151,6 +135,34 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       }
     }
   }
+}
+
+function SettingsBox(props: { autoscrollScript: boolean }): JSX.Element {
+  return (
+    <div className={style.settingsBox}>
+      <div className={style.textRow}>
+        S: Autoscroll i manus är {props.autoscrollScript ? "PÅ" : "AV"}
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineSpaceBar /> Kör actions + nästa nod
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineKeyboardReturn /> Kör actions
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineArrowDownward /> Nästa nod
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineArrowUpward /> Föregående nod
+      </div>
+      <div className={style.textRow}>
+        z, x, c...: Multichoice + köra dess actions
+      </div>
+      <div className={style.textRow}>
+        Z, X, C...: Multichoice + utan dess actions
+      </div>
+    </div>
+  );
 }
 
 export { LiveScreen };
