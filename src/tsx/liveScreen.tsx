@@ -32,6 +32,7 @@ interface IState {
   components: IComponentInfo[];
   effects: IEffect[];
   autoscrollScript: boolean;
+  showActionsOnNodes: boolean;
 }
 
 class LiveScreen extends React.PureComponent<IProps, IState> {
@@ -44,6 +45,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       components: [],
       effects: [],
       autoscrollScript: true,
+      showActionsOnNodes: true,
     };
     this.handleKey = this.handleKey.bind(this);
   }
@@ -70,13 +72,17 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
               components={this.state.components}
             />
           </div>
-          <SettingsBox autoscrollScript={this.state.autoscrollScript} />
+          <SettingsBox
+            autoscrollScript={this.state.autoscrollScript}
+            showActionsForNodes={this.state.showActionsOnNodes}
+          />
         </div>
         <Timeline
           nodes={this.state.nodes}
           history={this.state.history}
           focusY={200}
           choiceKeys={CHOICE_KEYS}
+          showActions={this.state.showActionsOnNodes}
         />
         <PdfViewer
           script={this.state.script}
@@ -128,6 +134,8 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         this.props.coreConnection.runActions();
       } else if (event.key === "s") {
         this.setState({ autoscrollScript: !this.state.autoscrollScript });
+      } else if (event.key === "a") {
+        this.setState({ showActionsOnNodes: !this.state.showActionsOnNodes });
       } else if (CHOICE_KEYS.includes(event.key.toLowerCase())) {
         const choiceIndex = CHOICE_KEYS.indexOf(event.key.toLowerCase());
         const runActions = event.key !== event.key.toUpperCase();
@@ -137,11 +145,17 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
   }
 }
 
-function SettingsBox(props: { autoscrollScript: boolean }): JSX.Element {
+function SettingsBox(props: {
+  autoscrollScript: boolean;
+  showActionsForNodes: boolean;
+}): JSX.Element {
   return (
     <div className={style.settingsBox}>
       <div className={style.textRow}>
         S: Autoscroll i manus är {props.autoscrollScript ? "PÅ" : "AV"}
+      </div>
+      <div className={style.textRow}>
+        A: Visa actions för nodes {props.showActionsForNodes ? "PÅ" : "AV"}
       </div>
       <div className={style.textRow}>
         <MdOutlineSpaceBar /> Kör actions + nästa nod

@@ -22,6 +22,7 @@ interface IProps {
   history: string[];
   focusY: number;
   choiceKeys: string[];
+  showActions: boolean;
 }
 
 interface IState {
@@ -186,11 +187,12 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .classed(style.promptText, true)
             .text(({ prompt }) => prompt);
           promptContainer
-            .selectAll(`.${style.promptActions}`)
+            .selectAll(`.${style.promptAction}`)
             .data(({ actions }) => actions)
             .enter()
             .append("xhtml:div")
-            .classed(style.promptActions, true)
+            .classed(style.promptAction, true)
+            .classed(style.promptActionHidden, !this.props.showActions)
             .text((action) => getActionText(action));
 
           this.props.choiceKeys.forEach((key, i) => {
@@ -234,11 +236,12 @@ class Timeline extends React.PureComponent<IProps, IState> {
                   `[${key}]: ${(next as INodeChoice[])[i].description}`,
               );
             promptContainer
-              .selectAll(`.${style.promptActions}`)
+              .selectAll(`.${style.promptAction}`)
               .data(({ next }) => (next as INodeChoice[])[i].actions)
               .enter()
               .append("xhtml:div")
-              .classed(style.promptActions, true)
+              .classed(style.promptAction, true)
+              .classed(style.promptActionHidden, !this.props.showActions)
               .text((action) => getActionText(action));
             subGroup
               .append("path")
@@ -275,6 +278,9 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .transition(transition)
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2);
+          update
+            .selectAll(`.${style.promptAction}`)
+            .classed(style.promptActionHidden, !this.props.showActions);
 
           this.props.choiceKeys.forEach((key, i) => {
             update
