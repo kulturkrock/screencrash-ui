@@ -1,6 +1,11 @@
 .component {
+    display: flex;
     padding: 1em 1em;
     border-bottom: 1px solid wheat;
+}
+
+.componentInfo {
+    flex: 1;
 }
 
 .componentName {
@@ -10,4 +15,18 @@
 
 .componentStatus {
     font-variant: small-caps;
+}
+
+.component button {
+    background: #ffffff00;
+    border: 1px solid wheat;
+    color: wheat;
+    margin: 2px;
+}
+.component button:hover {
+    cursor: pointer;
+    background: #ffffff20;
+    border-style: double;
+    border-width: 3px;
+    margin: 0px;
 }

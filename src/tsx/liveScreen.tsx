@@ -67,6 +67,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
             <StatusView
               effects={this.state.effects}
               onEffectAction={this.handleEffectAction.bind(this)}
+              onComponentReset={this.handleComponentReset.bind(this)}
               components={this.state.components}
             />
           </div>
@@ -113,6 +114,10 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
 
   private handleEffectAction(event: IEffectActionEvent): void {
     this.props.coreConnection.handleEffectAction(event);
+  }
+
+  private handleComponentReset(componentId: string): void {
+    this.props.coreConnection.handleComponentReset(componentId);
   }
 
   private handleKey(event: KeyboardEvent) {

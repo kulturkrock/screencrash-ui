@@ -13,6 +13,7 @@ const tabs = {
 interface IProps {
   effects: IEffect[];
   onEffectAction: (event: IEffectActionEvent) => void;
+  onComponentReset: (componentId: string) => void;
   components: IComponentInfo[];
 }
 
@@ -73,7 +74,12 @@ function TabContent(propsData: IPropsTab): JSX.Element {
       />
     );
   } else if (propsData.tabName == tabs.components) {
-    return <ComponentView components={propsData.props.components} />;
+    return (
+      <ComponentView
+        components={propsData.props.components}
+        onReset={propsData.props.onComponentReset}
+      />
+    );
   }
   return null;
 }
