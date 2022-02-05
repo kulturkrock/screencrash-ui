@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d3 from "d3";
 
-import { INodeCollection, INodeChoice } from "./types";
+import { INodeCollection, INodeChoice, IAction } from "./types";
 import style from "../less/timeline.module.less";
 
 const VIEWBOX_WIDTH = 200;
@@ -171,15 +171,27 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .attr("fill", ({ tense }) =>
               tense === "present" ? CURRENT_NODE_FILL : BACKGROUND_COLOR,
             );
-          g.append("foreignObject")
+          const promptContainer = g
+            .append("foreignObject")
             .attr("id", "prompt")
             .attr("x", ({ x }) => x + NODE_RADIUS)
             .attr("y", ({ y }) => y - NODE_SPACING / 2)
             .attr("width", ({ x }) => VIEWBOX_WIDTH - x - NODE_RADIUS)
             .attr("height", NODE_SPACING)
             .append("xhtml:div")
+            .classed(style.prompt, true);
+
+          promptContainer
+            .append("xhtml:div")
             .classed(style.promptText, true)
             .text(({ prompt }) => prompt);
+          promptContainer
+            .selectAll(`.${style.promptActions}`)
+            .data(({ actions }) => actions)
+            .enter()
+            .append("xhtml:div")
+            .classed(style.promptActions, true)
+            .text((action) => getActionText(action));
 
           this.props.choiceKeys.forEach((key, i) => {
             const subGroup = g.filter(
@@ -196,7 +208,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
                 tense === "present" || tense === "future" ? 1 : 0,
               )
               .attr("fill", BACKGROUND_COLOR);
-            subGroup
+            const promptContainer = subGroup
               .append("foreignObject")
               .attr("id", `text-choice-${key}`)
               .attr("x", ({ x }) => x + CHOICE_INDENT + NODE_RADIUS)
@@ -213,11 +225,21 @@ class Timeline extends React.PureComponent<IProps, IState> {
                 tense === "present" || tense === "future" ? 1 : 0,
               )
               .append("xhtml:div")
+              .classed(style.prompt, true);
+            promptContainer
+              .append("xhtml:div")
               .classed(style.promptText, true)
               .text(
                 ({ next }) =>
                   `[${key}]: ${(next as INodeChoice[])[i].description}`,
               );
+            promptContainer
+              .selectAll(`.${style.promptActions}`)
+              .data(({ next }) => (next as INodeChoice[])[i].actions)
+              .enter()
+              .append("xhtml:div")
+              .classed(style.promptActions, true)
+              .text((action) => getActionText(action));
             subGroup
               .append("path")
               .attr("id", `line-choice-${key}`)
@@ -300,6 +322,18 @@ class Timeline extends React.PureComponent<IProps, IState> {
         <svg viewBox={`0 0 ${VIEWBOX_WIDTH} ${this.state.viewboxHeight}`}></svg>
       </div>
     );
+  }
+}
+
+function getActionText(action: IAction): string {
+  if (action == null) {
+    return "[ACTION_NOT_FOUND]";
+  } else if (action.desc != null) {
+    return action.desc;
+  } else if (action.params && action.params.entityId) {
+    return `${action.target}:${action.cmd} ${action.params.entityId}`;
+  } else {
+    return `${action.target}:${action.cmd}`;
   }
 }
 
