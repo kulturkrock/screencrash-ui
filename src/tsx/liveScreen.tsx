@@ -10,6 +10,13 @@ import {
   IComponentInfo,
 } from "./types";
 
+import {
+  MdOutlineKeyboardReturn,
+  MdOutlineArrowDownward,
+  MdOutlineArrowUpward,
+  MdOutlineSpaceBar,
+} from "react-icons/md";
+
 import style from "../less/liveScreen.module.less";
 
 // If we need more choices than this, we can add more keys here
@@ -50,16 +57,6 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     document.removeEventListener("keydown", this.handleKey);
   }
 
-  private getSettings() {
-    const settings = ["Gå till nästa nod: spacebar"];
-    settings.push(
-      "Autoscroll i manus är " +
-        (this.state.autoscrollScript ? "PÅ" : "AV") +
-        " (växla med S)",
-    );
-    return settings;
-  }
-
   public render(): JSX.Element {
     const currentNodeId = this.state.history[this.state.history.length - 1];
     const currentNode = this.state.nodes[currentNodeId];
@@ -73,13 +70,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
               components={this.state.components}
             />
           </div>
-          <div className={style.settingsBox}>
-            {this.getSettings().map((text, index) => (
-              <div className={style.textRow} key={index}>
-                {text}
-              </div>
-            ))}
-          </div>
+          <SettingsBox autoscrollScript={this.state.autoscrollScript} />
         </div>
         <Timeline
           nodes={this.state.nodes}
@@ -128,15 +119,50 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     // Only accept keyboard shortcuts on first press and when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
       if (event.key === " ") {
-        this.props.coreConnection.nextNode();
+        this.props.coreConnection.nextNode(true);
+      } else if (event.key == "Up" || event.key == "ArrowUp") {
+        this.props.coreConnection.prevNode();
+      } else if (event.key == "Down" || event.key == "ArrowDown") {
+        this.props.coreConnection.nextNode(false);
+      } else if (event.key == "Enter") {
+        this.props.coreConnection.runActions();
       } else if (event.key === "s") {
         this.setState({ autoscrollScript: !this.state.autoscrollScript });
-      } else if (CHOICE_KEYS.includes(event.key)) {
-        const choiceIndex = CHOICE_KEYS.indexOf(event.key);
-        this.props.coreConnection.choosePath(choiceIndex);
+      } else if (CHOICE_KEYS.includes(event.key.toLowerCase())) {
+        const choiceIndex = CHOICE_KEYS.indexOf(event.key.toLowerCase());
+        const runActions = event.key !== event.key.toUpperCase();
+        this.props.coreConnection.choosePath(choiceIndex, runActions);
       }
     }
   }
+}
+
+function SettingsBox(props: { autoscrollScript: boolean }): JSX.Element {
+  return (
+    <div className={style.settingsBox}>
+      <div className={style.textRow}>
+        S: Autoscroll i manus är {props.autoscrollScript ? "PÅ" : "AV"}
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineSpaceBar /> Kör actions + nästa nod
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineKeyboardReturn /> Kör actions
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineArrowDownward /> Nästa nod
+      </div>
+      <div className={style.textRow}>
+        <MdOutlineArrowUpward /> Föregående nod
+      </div>
+      <div className={style.textRow}>
+        z, x, c...: Multichoice + köra dess actions
+      </div>
+      <div className={style.textRow}>
+        Z, X, C...: Multichoice + utan dess actions
+      </div>
+    </div>
+  );
 }
 
 export { LiveScreen };
