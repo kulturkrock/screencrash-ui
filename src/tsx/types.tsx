@@ -50,6 +50,10 @@ interface IComponentInfo {
   status: string;
 }
 
+interface IConnectionState {
+  connected: boolean;
+}
+
 // Empty object, since there is no built-in for it
 type IEmpty = Record<never, never>;
 
@@ -61,5 +65,6 @@ export {
   EffectType,
   IEffectActionEvent,
   IComponentInfo,
+  IConnectionState,
   IEmpty,
 };

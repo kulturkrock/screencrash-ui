@@ -9,6 +9,7 @@ import style from "../less/main.module.less";
 interface IState {
   coreAddress: string;
   coreConnection: ICoreConnection;
+  isConnected: boolean;
 }
 
 class Main extends React.PureComponent<IEmpty, IState> {
@@ -19,7 +20,12 @@ class Main extends React.PureComponent<IEmpty, IState> {
     this.state = {
       coreAddress,
       coreConnection: new RealCoreConnection(coreAddress),
+      isConnected: false,
     };
+
+    this.state.coreConnection.addEventListener("connection", (event) => {
+      this.setState({ isConnected: event.detail.connected });
+    });
   }
 
   public render() {
@@ -27,6 +33,7 @@ class Main extends React.PureComponent<IEmpty, IState> {
       <div className={style.gridContainer}>
         <div className={style.header}>
           <div>Mode: Live</div>
+          <div>{this.state.isConnected ? "CONNECTED" : "CONNECTING..."}</div>
           <div>
             <form>
               <label>Core: </label>

@@ -4,6 +4,7 @@ import {
   IEffect,
   IEffectActionEvent,
   IComponentInfo,
+  IConnectionState,
 } from "./types";
 
 const eventNames = {
@@ -12,6 +13,7 @@ const eventNames = {
   script: "script",
   effects: "effects",
   components: "components",
+  connection: "connection",
 };
 
 /**
@@ -27,6 +29,10 @@ interface ICoreConnection extends EventTarget {
   handleEffectAction(event: IEffectActionEvent): void;
 
   // Events
+  addEventListener(
+    event: "connection",
+    listener: (event: CustomEvent<IConnectionState>) => void,
+  ): void;
   addEventListener(
     event: "nodes",
     listener: (event: CustomEvent<INodeCollection>) => void,
@@ -61,9 +67,21 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
     this.address = address;
   }
 
+  private emitConnected(isConnected: boolean) {
+    this.dispatchEvent(
+      new CustomEvent(eventNames.connection, {
+        detail: {
+          connected: isConnected,
+        },
+      }),
+    );
+  }
+
   public handshake(): void {
     this.socket = new WebSocket(`ws://${this.address}`);
     this.socket.addEventListener("open", () => {
+      console.log(`Got connection to core`);
+      this.emitConnected(true);
       this.socket.send(JSON.stringify({ client: "ui" }));
     });
     this.socket.addEventListener("message", (event: MessageEvent) => {
@@ -101,6 +119,15 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
         default:
           console.error(`Unknown message from Core: ${messageType}`);
       }
+    });
+    this.socket.addEventListener("close", () => {
+      console.log(`Lost connection with server. Reconnecting in 1s...`);
+      this.emitConnected(false);
+      setTimeout(this.handshake.bind(this), 1000);
+    });
+    this.socket.addEventListener("error", () => {
+      console.log(`Got error from websocket connection. Closing connection...`);
+      this.socket.close();
     });
   }
 
