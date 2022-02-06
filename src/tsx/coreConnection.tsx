@@ -5,6 +5,7 @@ import {
   IEffectActionEvent,
   IComponentInfo,
   IConnectionState,
+  ILogMessage,
 } from "./types";
 
 const eventNames = {
@@ -12,6 +13,8 @@ const eventNames = {
   history: "history",
   script: "script",
   effects: "effects",
+  logs: "logs",
+  logAdded: "log-added",
   components: "components",
   connection: "connection",
 };
@@ -29,6 +32,7 @@ interface ICoreConnection extends EventTarget {
   runActions(): void;
   choosePath(choiceIndex: number, runActions: boolean): void;
   handleEffectAction(event: IEffectActionEvent): void;
+  handleClearLogMessages(): void;
 
   // Events
   addEventListener(
@@ -54,6 +58,14 @@ interface ICoreConnection extends EventTarget {
   addEventListener(
     event: "effects",
     listener: (event: CustomEvent<IEffect[]>) => void,
+  ): void;
+  addEventListener(
+    event: "logs",
+    listener: (event: CustomEvent<ILogMessage[]>) => void,
+  ): void;
+  addEventListener(
+    event: "log-added",
+    listener: (event: CustomEvent<ILogMessage>) => void,
   ): void;
 }
 
@@ -116,6 +128,16 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
         case "effects":
           this.dispatchEvent(
             new CustomEvent(eventNames.effects, { detail: data }),
+          );
+          break;
+        case "logs":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.logs, { detail: data }),
+          );
+          break;
+        case "log-added":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.logAdded, { detail: data }),
           );
           break;
         default:
@@ -214,6 +236,14 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
     if (message.cmd !== "") {
       this.socket.send(JSON.stringify(message));
     }
+  }
+
+  public handleClearLogMessages(): void {
+    this.socket.send(
+      JSON.stringify({
+        messageType: "clear-logs",
+      }),
+    );
   }
 }
 
