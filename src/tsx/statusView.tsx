@@ -29,6 +29,16 @@ class StatusView extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = { currentTab: tabs.effects };
+
+    this.handleKey = this.handleKey.bind(this);
+  }
+
+  public componentDidMount(): void {
+    document.addEventListener("keydown", this.handleKey);
+  }
+
+  public componentWillUnmount(): void {
+    document.removeEventListener("keydown", this.handleKey);
   }
 
   public render(): JSX.Element {
@@ -61,6 +71,18 @@ class StatusView extends React.PureComponent<IProps, IState> {
 
   public setTab(tabName: string): void {
     this.setState({ ...this.state, currentTab: tabName });
+  }
+
+  private handleKey(event: KeyboardEvent) {
+    // Only accept keyboard shortcuts when nothing is focused
+    if (document.activeElement === document.body && !event.repeat) {
+      console.log(event.key);
+      if (event.key === "1") {
+        this.setTab(tabs.effects);
+      } else if (event.key === "2") {
+        this.setTab(tabs.components);
+      }
+    }
   }
 }
 

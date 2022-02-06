@@ -161,6 +161,7 @@ function SettingsBox(props: { autoscrollScript: boolean }): JSX.Element {
       <div className={style.textRow}>
         Z, X, C...: Multichoice + utan dess actions
       </div>
+      <div className={style.textRow}>1, 2, 3...: Byt mellan status-tabbar</div>
     </div>
   );
 }
