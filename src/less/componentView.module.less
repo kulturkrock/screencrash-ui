@@ -7,6 +7,10 @@
 .componentInfo {
     flex: 1;
 }
+.componentActions {
+    display: flex;
+    gap: 0.2em;
+}
 
 .componentName {
     font-variant: small-caps;
@@ -21,12 +25,11 @@
     background: #ffffff00;
     border: 1px solid wheat;
     color: wheat;
-    margin: 2px;
 }
 .component button:hover {
     cursor: pointer;
     background: #ffffff20;
-    border-style: double;
-    border-width: 3px;
-    margin: 0px;
+}
+.component button:active {
+    background: #ffffff40;
 }

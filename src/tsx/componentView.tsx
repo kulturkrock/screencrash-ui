@@ -6,6 +6,7 @@ import style from "../less/componentView.module.less";
 interface IProps {
   components: IComponentInfo[];
   onReset: (componentId: string) => void;
+  onRestart: (componentId: string) => void;
 }
 
 class ComponentView extends React.PureComponent<IProps, IEmpty> {
@@ -27,9 +28,14 @@ class ComponentView extends React.PureComponent<IProps, IEmpty> {
               </div>
               <div className={style.componentStatus}>{comp.status}</div>
             </div>
-            <button onClick={this.onReset.bind(this, comp.componentId)}>
-              Reset
-            </button>
+            <div className={style.componentActions}>
+              <button onClick={this.onReset.bind(this, comp.componentId)}>
+                Reset
+              </button>
+              <button onClick={this.onRestart.bind(this, comp.componentId)}>
+                Restart
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -39,6 +45,12 @@ class ComponentView extends React.PureComponent<IProps, IEmpty> {
   private onReset(componentId: string) {
     if (this.props.onReset) {
       this.props.onReset(componentId);
+    }
+  }
+
+  private onRestart(componentId: string) {
+    if (this.props.onRestart) {
+      this.props.onRestart(componentId);
     }
   }
 }

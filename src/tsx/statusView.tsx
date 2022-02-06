@@ -14,6 +14,7 @@ interface IProps {
   effects: IEffect[];
   onEffectAction: (event: IEffectActionEvent) => void;
   onComponentReset: (componentId: string) => void;
+  onComponentRestart: (componentId: string) => void;
   components: IComponentInfo[];
 }
 
@@ -78,6 +79,7 @@ function TabContent(propsData: IPropsTab): JSX.Element {
       <ComponentView
         components={propsData.props.components}
         onReset={propsData.props.onComponentReset}
+        onRestart={propsData.props.onComponentRestart}
       />
     );
   }

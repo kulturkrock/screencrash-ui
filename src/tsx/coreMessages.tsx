@@ -9,5 +9,9 @@ interface ComponentResetMessage {
   messageType: string;
   componentId: string;
 }
+interface ComponentRestartMessage {
+  messageType: string;
+  componentId: string;
+}
 
-export { OnTheFlyAction, ComponentResetMessage };
+export { OnTheFlyAction, ComponentResetMessage, ComponentRestartMessage };
