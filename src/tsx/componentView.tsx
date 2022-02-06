@@ -9,9 +9,18 @@ interface IProps {
   onRestart: (componentId: string) => void;
 }
 
-class ComponentView extends React.PureComponent<IProps, IEmpty> {
+interface IState {
+  resetActivated: string[];
+  restartActivated: string[];
+}
+
+class ComponentView extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
+    this.state = {
+      resetActivated: [],
+      restartActivated: [],
+    };
   }
 
   public render(): JSX.Element {
@@ -29,10 +38,24 @@ class ComponentView extends React.PureComponent<IProps, IEmpty> {
               <div className={style.componentStatus}>{comp.status}</div>
             </div>
             <div className={style.componentActions}>
-              <button onClick={this.onReset.bind(this, comp.componentId)}>
+              <button
+                className={
+                  this.state.resetActivated.includes(comp.componentId)
+                    ? style.resetButtonEnabled
+                    : ""
+                }
+                onClick={this.onReset.bind(this, comp.componentId)}
+              >
                 Reset
               </button>
-              <button onClick={this.onRestart.bind(this, comp.componentId)}>
+              <button
+                className={
+                  this.state.restartActivated.includes(comp.componentId)
+                    ? style.restartButtonEnabled
+                    : ""
+                }
+                onClick={this.onRestart.bind(this, comp.componentId)}
+              >
                 Restart
               </button>
             </div>
@@ -43,15 +66,47 @@ class ComponentView extends React.PureComponent<IProps, IEmpty> {
   }
 
   private onReset(componentId: string) {
-    if (this.props.onReset) {
-      this.props.onReset(componentId);
+    if (this.state.resetActivated.includes(componentId)) {
+      if (this.props.onReset) {
+        this.props.onReset(componentId);
+      }
+      this.deactivateResetFor(componentId);
+    } else {
+      this.setState({
+        resetActivated: [...this.state.resetActivated, componentId],
+      });
+      setTimeout(this.deactivateResetFor.bind(this, componentId), 2000);
     }
   }
 
+  private deactivateResetFor(componentId: string) {
+    this.setState({
+      resetActivated: this.state.resetActivated.filter(
+        (comp) => comp != componentId,
+      ),
+    });
+  }
+
   private onRestart(componentId: string) {
-    if (this.props.onRestart) {
-      this.props.onRestart(componentId);
+    if (this.state.restartActivated.includes(componentId)) {
+      if (this.props.onRestart) {
+        this.props.onRestart(componentId);
+      }
+      this.deactivateRestartFor(componentId);
+    } else {
+      this.setState({
+        restartActivated: [...this.state.restartActivated, componentId],
+      });
+      setTimeout(this.deactivateRestartFor.bind(this, componentId), 2000);
     }
+  }
+
+  private deactivateRestartFor(componentId: string) {
+    this.setState({
+      restartActivated: this.state.restartActivated.filter(
+        (comp) => comp != componentId,
+      ),
+    });
   }
 }
 
