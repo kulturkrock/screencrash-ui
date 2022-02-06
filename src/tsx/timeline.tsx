@@ -332,9 +332,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
 }
 
 function getActionText(action: IAction): string {
-  if (action == null) {
-    return "[ACTION_NOT_FOUND]";
-  } else if (action.desc != null) {
+  if (action.desc != null) {
     return action.desc;
   } else if (action.params && action.params.entityId) {
     return `${action.target}:${action.cmd} ${action.params.entityId}`;
