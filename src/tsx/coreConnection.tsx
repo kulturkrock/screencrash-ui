@@ -1,4 +1,8 @@
-import { OnTheFlyAction } from "./coreMessages";
+import {
+  ComponentResetMessage,
+  ComponentRestartMessage,
+  OnTheFlyAction,
+} from "./coreMessages";
 import {
   INodeCollection,
   IEffect,
@@ -33,6 +37,8 @@ interface ICoreConnection extends EventTarget {
   choosePath(choiceIndex: number, runActions: boolean): void;
   handleEffectAction(event: IEffectActionEvent): void;
   handleClearLogMessages(): void;
+  handleComponentReset(componentId: string): void;
+  handleComponentRestart(componentId: string): void;
 
   // Events
   addEventListener(
@@ -244,6 +250,22 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
         messageType: "clear-logs",
       }),
     );
+  }
+
+  public handleComponentReset(componentId: string): void {
+    const message: ComponentResetMessage = {
+      messageType: "component-reset",
+      componentId: componentId,
+    };
+    this.socket.send(JSON.stringify(message));
+  }
+
+  public handleComponentRestart(componentId: string): void {
+    const message: ComponentRestartMessage = {
+      messageType: "component-restart",
+      componentId: componentId,
+    };
+    this.socket.send(JSON.stringify(message));
   }
 }
 

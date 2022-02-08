@@ -1,9 +1,17 @@
+interface IAction {
+  target: string;
+  cmd: string;
+  desc: string;
+  params: { [index: string]: unknown };
+}
 interface INodeChoice {
   node: string;
   description: string;
+  actions: IAction[];
 }
 interface INode {
   next: string | INodeChoice[];
+  actions: IAction[];
   prompt: string;
   pdfPage: number;
   pdfLocationOnPage: number;
@@ -66,6 +74,7 @@ type IEmpty = Record<never, never>;
 
 export {
   INodeChoice,
+  IAction,
   INode,
   INodeCollection,
   IEffect,

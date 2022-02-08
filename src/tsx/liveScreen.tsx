@@ -35,6 +35,7 @@ interface IState {
   effects: IEffect[];
   autoscrollScript: boolean;
   logMessages: ILogMessage[];
+  showActionsOnNodes: boolean;
 }
 
 class LiveScreen extends React.PureComponent<IProps, IState> {
@@ -48,6 +49,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       effects: [],
       autoscrollScript: true,
       logMessages: [],
+      showActionsOnNodes: true,
     };
     this.handleKey = this.handleKey.bind(this);
   }
@@ -71,18 +73,24 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
             <StatusView
               effects={this.state.effects}
               onEffectAction={this.handleEffectAction.bind(this)}
+              onComponentReset={this.handleComponentReset.bind(this)}
+              onComponentRestart={this.handleComponentRestart.bind(this)}
               components={this.state.components}
               logMessages={this.state.logMessages}
               onClearLogMessages={this.handleClearLogMessages.bind(this)}
             />
           </div>
-          <SettingsBox autoscrollScript={this.state.autoscrollScript} />
+          <SettingsBox
+            autoscrollScript={this.state.autoscrollScript}
+            showActionsForNodes={this.state.showActionsOnNodes}
+          />
         </div>
         <Timeline
           nodes={this.state.nodes}
           history={this.state.history}
           focusY={200}
           choiceKeys={CHOICE_KEYS}
+          showActions={this.state.showActionsOnNodes}
         />
         <PdfViewer
           script={this.state.script}
@@ -138,6 +146,14 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     this.props.coreConnection.handleClearLogMessages();
   }
 
+  private handleComponentReset(componentId: string): void {
+    this.props.coreConnection.handleComponentReset(componentId);
+  }
+
+  private handleComponentRestart(componentId: string): void {
+    this.props.coreConnection.handleComponentRestart(componentId);
+  }
+
   private handleKey(event: KeyboardEvent) {
     // Only accept keyboard shortcuts on first press and when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
@@ -151,6 +167,8 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         this.props.coreConnection.runActions();
       } else if (event.key === "s") {
         this.setState({ autoscrollScript: !this.state.autoscrollScript });
+      } else if (event.key === "a") {
+        this.setState({ showActionsOnNodes: !this.state.showActionsOnNodes });
       } else if (CHOICE_KEYS.includes(event.key.toLowerCase())) {
         const choiceIndex = CHOICE_KEYS.indexOf(event.key.toLowerCase());
         const runActions = event.key !== event.key.toUpperCase();
@@ -160,11 +178,17 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
   }
 }
 
-function SettingsBox(props: { autoscrollScript: boolean }): JSX.Element {
+function SettingsBox(props: {
+  autoscrollScript: boolean;
+  showActionsForNodes: boolean;
+}): JSX.Element {
   return (
     <div className={style.settingsBox}>
       <div className={style.textRow}>
         S: Autoscroll i manus är {props.autoscrollScript ? "PÅ" : "AV"}
+      </div>
+      <div className={style.textRow}>
+        A: Visa actions för nodes {props.showActionsForNodes ? "PÅ" : "AV"}
       </div>
       <div className={style.textRow}>
         <MdOutlineSpaceBar /> Kör actions + nästa nod
