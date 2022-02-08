@@ -62,6 +62,13 @@ interface IConnectionState {
   connected: boolean;
 }
 
+interface ILogMessage {
+  level: string;
+  timestamp: number;
+  origin: string;
+  message: string;
+}
+
 // Empty object, since there is no built-in for it
 type IEmpty = Record<never, never>;
 
@@ -75,5 +82,6 @@ export {
   IEffectActionEvent,
   IComponentInfo,
   IConnectionState,
+  ILogMessage,
   IEmpty,
 };

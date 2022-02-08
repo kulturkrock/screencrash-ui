@@ -3,11 +3,18 @@ import * as React from "react";
 import style from "../less/statusView.module.less";
 import { ComponentView } from "./componentView";
 import { EffectView } from "./effectView/effectView";
-import { IComponentInfo, IEffect, IEffectActionEvent } from "./types";
+import { LogView } from "./logView";
+import {
+  IComponentInfo,
+  IEffect,
+  IEffectActionEvent,
+  ILogMessage,
+} from "./types";
 
 const tabs = {
   effects: "effects",
   components: "components",
+  logs: "log",
 };
 
 interface IProps {
@@ -16,6 +23,8 @@ interface IProps {
   onComponentReset: (componentId: string) => void;
   onComponentRestart: (componentId: string) => void;
   components: IComponentInfo[];
+  logMessages: ILogMessage[];
+  onClearLogMessages: () => void;
 }
 
 interface IPropsTab {
@@ -30,7 +39,7 @@ interface IState {
 class StatusView extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { currentTab: tabs.effects };
+    this.state = { currentTab: tabs.logs };
 
     this.handleKey = this.handleKey.bind(this);
   }
@@ -53,7 +62,7 @@ class StatusView extends React.PureComponent<IProps, IState> {
             }`}
             onClick={this.setTab.bind(this, tabs.effects)}
           >
-            Effects
+            {this.getTabText("Effects", "FX", tabs.effects)}
           </div>
           <div
             className={`${style.tab} ${
@@ -61,7 +70,17 @@ class StatusView extends React.PureComponent<IProps, IState> {
             }`}
             onClick={this.setTab.bind(this, tabs.components)}
           >
-            Components ({this.props.components.length})
+            {this.getTabText("Components", "COMP", tabs.components)} (
+            {this.props.components.length})
+          </div>
+          <div
+            className={`${style.tab} ${
+              this.state.currentTab == tabs.logs ? style.selected : ""
+            }`}
+            onClick={this.setTab.bind(this, tabs.logs)}
+          >
+            {this.getTabText("Logs", "LOG", tabs.logs)} (
+            {this.props.logMessages.length})
           </div>
         </div>
         <div className={style.tabContent}>
@@ -75,6 +94,18 @@ class StatusView extends React.PureComponent<IProps, IState> {
     this.setState({ ...this.state, currentTab: tabName });
   }
 
+  private getTabText(
+    longName: string,
+    shortName: string,
+    tabName: string,
+  ): JSX.Element {
+    if (this.state.currentTab == tabName) {
+      return <span>{longName}</span>;
+    } else {
+      return <span className={style.shortName}>{shortName}</span>;
+    }
+  }
+
   private handleKey(event: KeyboardEvent) {
     // Only accept keyboard shortcuts when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
@@ -83,6 +114,8 @@ class StatusView extends React.PureComponent<IProps, IState> {
         this.setTab(tabs.effects);
       } else if (event.key === "2") {
         this.setTab(tabs.components);
+      } else if (event.key === "3") {
+        this.setTab(tabs.logs);
       }
     }
   }
@@ -102,6 +135,13 @@ function TabContent(propsData: IPropsTab): JSX.Element {
         components={propsData.props.components}
         onReset={propsData.props.onComponentReset}
         onRestart={propsData.props.onComponentRestart}
+      />
+    );
+  } else if (propsData.tabName == tabs.logs) {
+    return (
+      <LogView
+        logMessages={propsData.props.logMessages}
+        onClearMessages={propsData.props.onClearLogMessages}
       />
     );
   }
