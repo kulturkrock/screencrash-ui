@@ -87,7 +87,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
       // Show a few nodes into the future, or until we reach a branch point
       for (let step = 0; step < nodesAfter; step++) {
         const nextId = visibleNodes[visibleNodes.length - 1].next;
-        if (typeof nextId === "string") {
+        if (typeof nextId === "string" && nodes[nextId] !== undefined) {
           visibleNodes.push({ id: nextId, tense: "future", ...nodes[nextId] });
         }
       }
