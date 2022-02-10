@@ -8,6 +8,7 @@ import {
   IEffect,
   IEffectActionEvent,
   IComponentInfo,
+  ILogMessage,
 } from "./types";
 
 import {
@@ -24,6 +25,7 @@ const CHOICE_KEYS = ["z", "x", "c", "v", "b", "n", "m"];
 
 interface IProps {
   coreConnection: ICoreConnection;
+  maxNofLogs: number;
 }
 interface IState {
   nodes: INodeCollection;
@@ -32,6 +34,7 @@ interface IState {
   components: IComponentInfo[];
   effects: IEffect[];
   autoscrollScript: boolean;
+  logMessages: ILogMessage[];
   showActionsOnNodes: boolean;
 }
 
@@ -45,6 +48,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       components: [],
       effects: [],
       autoscrollScript: true,
+      logMessages: [],
       showActionsOnNodes: true,
     };
     this.handleKey = this.handleKey.bind(this);
@@ -64,12 +68,16 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     const currentNode = this.state.nodes[currentNodeId];
     return (
       <div className={style.screen}>
-        <div>
+        <div className={style.leftContainer}>
           <div className={style.statusViewContainer}>
             <StatusView
               effects={this.state.effects}
               onEffectAction={this.handleEffectAction.bind(this)}
+              onComponentReset={this.handleComponentReset.bind(this)}
+              onComponentRestart={this.handleComponentRestart.bind(this)}
               components={this.state.components}
+              logMessages={this.state.logMessages}
+              onClearLogMessages={this.handleClearLogMessages.bind(this)}
             />
           </div>
           <SettingsBox
@@ -113,12 +121,37 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     this.props.coreConnection.addEventListener("effects", (event) => {
       this.setState({ effects: event.detail });
     });
+    this.props.coreConnection.addEventListener("logs", (event) => {
+      this.setState({
+        logMessages: event.detail.slice(-this.props.maxNofLogs),
+      });
+    });
+    this.props.coreConnection.addEventListener("log-added", (event) => {
+      this.setState({
+        logMessages: [
+          ...this.state.logMessages.slice(-this.props.maxNofLogs + 1),
+          event.detail,
+        ],
+      });
+    });
 
     this.props.coreConnection.handshake();
   }
 
   private handleEffectAction(event: IEffectActionEvent): void {
     this.props.coreConnection.handleEffectAction(event);
+  }
+
+  private handleClearLogMessages(): void {
+    this.props.coreConnection.handleClearLogMessages();
+  }
+
+  private handleComponentReset(componentId: string): void {
+    this.props.coreConnection.handleComponentReset(componentId);
+  }
+
+  private handleComponentRestart(componentId: string): void {
+    this.props.coreConnection.handleComponentRestart(componentId);
   }
 
   private handleKey(event: KeyboardEvent) {
@@ -175,6 +208,7 @@ function SettingsBox(props: {
       <div className={style.textRow}>
         Z, X, C...: Multichoice + utan dess actions
       </div>
+      <div className={style.textRow}>1, 2, 3...: Byt mellan status-tabbar</div>
     </div>
   );
 }

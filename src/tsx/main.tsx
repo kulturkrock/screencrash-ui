@@ -48,7 +48,10 @@ class Main extends React.PureComponent<IEmpty, IState> {
           </div>
         </div>
         <div className={style.screen}>
-          <LiveScreen coreConnection={this.state.coreConnection} />
+          <LiveScreen
+            coreConnection={this.state.coreConnection}
+            maxNofLogs={100}
+          />
         </div>
       </div>
     );
