@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IComponentInfo, IEmpty } from "./types";
+import { IComponentInfo } from "./types";
 
 import style from "../less/componentView.module.less";
 
