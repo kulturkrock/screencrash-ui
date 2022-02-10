@@ -39,7 +39,7 @@ interface IState {
 class StatusView extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { currentTab: tabs.logs };
+    this.state = { currentTab: tabs.effects };
 
     this.handleKey = this.handleKey.bind(this);
   }
