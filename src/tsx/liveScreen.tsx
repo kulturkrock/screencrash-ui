@@ -21,7 +21,7 @@ import {
 import style from "../less/liveScreen.module.less";
 
 // If we need more choices than this, we can add more keys here
-const CHOICE_KEYS = ["z", "x", "c", "v"];
+const CHOICE_KEYS = ["z", "x", "c", "v", "b", "n", "m"];
 
 interface IProps {
   coreConnection: ICoreConnection;
