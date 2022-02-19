@@ -7,7 +7,7 @@ import {
   INodeCollection,
   IEffect,
   IEffectActionEvent,
-  IComponentInfo,
+  IComponentState,
   IConnectionState,
   ILogMessage,
 } from "./types";
@@ -59,7 +59,7 @@ interface ICoreConnection extends EventTarget {
   ): void;
   addEventListener(
     event: "components",
-    listener: (event: CustomEvent<IComponentInfo[]>) => void,
+    listener: (event: CustomEvent<IComponentState[]>) => void,
   ): void;
   addEventListener(
     event: "effects",

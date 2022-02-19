@@ -5,7 +5,7 @@ import { ComponentView } from "./componentView";
 import { EffectView } from "./effectView/effectView";
 import { LogView } from "./logView";
 import {
-  IComponentInfo,
+  IComponentState,
   IEffect,
   IEffectActionEvent,
   ILogMessage,
@@ -22,7 +22,7 @@ interface IProps {
   onEffectAction: (event: IEffectActionEvent) => void;
   onComponentReset: (componentId: string) => void;
   onComponentRestart: (componentId: string) => void;
-  components: IComponentInfo[];
+  components: IComponentState[];
   logMessages: ILogMessage[];
   onClearLogMessages: () => void;
 }
