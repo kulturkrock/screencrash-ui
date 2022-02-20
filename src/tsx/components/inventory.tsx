@@ -29,31 +29,18 @@ interface IConfiguration {
 
 class InventoryView extends React.PureComponent<IProps, IEmpty> {
   public render(): JSX.Element {
-    console.log(this.props.inventory.state);
-    const configuration = (this.props.inventory.state.configuration || {
-      items: [],
-      achievements: [],
-    }) as IConfiguration;
-
-    configuration.items.sort((item1, item2) => {
-      if (item1.cost !== 0 && item2.cost === 0) return -1;
-      else if (item1.cost === 0 && item2.cost !== 0) return 1;
-      return item1.description.localeCompare(item2.description);
-    });
-
-    const achievementsReached = (this.props.inventory.state
-      .achievementsReached || []) as IAchievement[];
-
-    const money = (this.props.inventory.state.money || 0) as number;
-    const items = (this.props.inventory.state.items || []) as string[];
-    const achievements = (this.props.inventory.state.achievements ||
-      []) as IAchievement[];
-    const achivementNames = achievements.map((ach) => ach.name);
+    const {
+      configuration,
+      money,
+      itemCount,
+      achievementsReached,
+      achievementNames,
+    } = this._prepareData();
 
     return (
       <div className={style.container}>
         {achievementsReached
-          .filter((achievement) => !achivementNames.includes(achievement.name))
+          .filter((achievement) => !achievementNames.includes(achievement.name))
           .map((achievement) => (
             <div key={achievement.name} className={style.achievement}>
               <div className={style.achievementInfo}>
@@ -85,6 +72,9 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
           {configuration.items.map((item) => (
             <div key={item.name} className={style.item}>
               <div>
+                <span className={style.itemCount}>
+                  {itemCount[item.name] || 0}
+                </span>{" "}
                 {item.description}{" "}
                 {item.cost !== 0 ? `(${item.cost} guld)` : ""}
               </div>
@@ -108,7 +98,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
                 <div className={style.achievementName}>{achievement.title}</div>
                 <div className={style.achievementDesc}>{achievement.desc}</div>
               </div>
-              {achivementNames.includes(achievement.name) &&
+              {achievementNames.includes(achievement.name) &&
               !achievement.reuse ? (
                 ""
               ) : (
@@ -123,6 +113,46 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
         </div>
       </div>
     );
+  }
+
+  _prepareData(): {
+    configuration: IConfiguration;
+    money: number;
+    itemCount: { [index: string]: number };
+    achievementsReached: IAchievement[];
+    achievementNames: string[];
+  } {
+    const configuration = (this.props.inventory.state.configuration || {
+      items: [],
+      achievements: [],
+    }) as IConfiguration;
+
+    configuration.items.sort((item1, item2) => {
+      if (item1.cost !== 0 && item2.cost === 0) return -1;
+      else if (item1.cost === 0 && item2.cost !== 0) return 1;
+      return item1.description.localeCompare(item2.description);
+    });
+
+    const achievementsReached = (this.props.inventory.state
+      .achievementsReached || []) as IAchievement[];
+
+    const money = (this.props.inventory.state.money || 0) as number;
+    const itemCount: { [index: string]: number } = {};
+    const items = (this.props.inventory.state.items || []) as string[];
+    for (const item of items) {
+      itemCount[item] = (itemCount[item] || 0) + 1;
+    }
+    const achievements = (this.props.inventory.state.achievements ||
+      []) as IAchievement[];
+    const achievementNames = achievements.map((ach) => ach.name);
+
+    return {
+      configuration,
+      money,
+      itemCount,
+      achievementsReached,
+      achievementNames,
+    };
   }
 
   _sendItemCommand(cmd: string, item: string): void {
