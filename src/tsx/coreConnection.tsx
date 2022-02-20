@@ -35,6 +35,7 @@ interface ICoreConnection extends EventTarget {
   nextNode(runActions: boolean): void;
   runActions(): void;
   choosePath(choiceIndex: number, runActions: boolean): void;
+  runOnTheFlyAction(action: OnTheFlyAction): void;
   handleEffectAction(event: IEffectActionEvent): void;
   handleClearLogMessages(): void;
   handleComponentReset(componentId: string): void;
@@ -85,6 +86,7 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
   constructor(address: string) {
     super();
     this.address = address;
+    this.runOnTheFlyAction = this.runOnTheFlyAction.bind(this);
   }
 
   private emitConnected(isConnected: boolean) {
@@ -239,8 +241,13 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
         break;
     }
 
-    if (message.cmd !== "") {
-      this.socket.send(JSON.stringify(message));
+    this.runOnTheFlyAction(message);
+  }
+
+  public runOnTheFlyAction(action: OnTheFlyAction): void {
+    action.messageType = "component-action";
+    if (action.cmd !== "" && action.cmd !== null) {
+      this.socket.send(JSON.stringify(action));
     }
   }
 
