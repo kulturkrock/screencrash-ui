@@ -7,7 +7,7 @@ import {
   INodeCollection,
   IEffect,
   IEffectActionEvent,
-  IComponentInfo,
+  IComponentState,
   ILogMessage,
 } from "./types";
 
@@ -31,7 +31,7 @@ interface IState {
   nodes: INodeCollection;
   history: string[];
   script: string;
-  components: IComponentInfo[];
+  components: IComponentState[];
   effects: IEffect[];
   autoscrollScript: boolean;
   logMessages: ILogMessage[];

@@ -1,10 +1,10 @@
 import * as React from "react";
-import { IComponentInfo } from "./types";
+import { IComponentState } from "./types";
 
 import style from "../less/componentView.module.less";
 
 interface IProps {
-  components: IComponentInfo[];
+  components: IComponentState[];
   onReset: (componentId: string) => void;
   onRestart: (componentId: string) => void;
 }
@@ -29,32 +29,32 @@ class ComponentView extends React.PureComponent<IProps, IState> {
         {this.props.components.map((comp) => (
           <div
             className={style.component}
-            key={`${comp.componentName}_${comp.componentId}`}
+            key={`${comp.info.componentName}_${comp.info.componentId}`}
           >
             <div className={style.componentInfo}>
               <div className={style.componentName}>
-                {comp.componentId} ({comp.componentName})
+                {comp.info.componentId} ({comp.info.componentName})
               </div>
-              <div className={style.componentStatus}>{comp.status}</div>
+              <div className={style.componentStatus}>{comp.info.status}</div>
             </div>
             <div className={style.componentActions}>
               <button
                 className={
-                  this.state.resetActivated.includes(comp.componentId)
+                  this.state.resetActivated.includes(comp.info.componentId)
                     ? style.resetButtonEnabled
                     : ""
                 }
-                onClick={this.onReset.bind(this, comp.componentId)}
+                onClick={this.onReset.bind(this, comp.info.componentId)}
               >
                 Reset
               </button>
               <button
                 className={
-                  this.state.restartActivated.includes(comp.componentId)
+                  this.state.restartActivated.includes(comp.info.componentId)
                     ? style.restartButtonEnabled
                     : ""
                 }
-                onClick={this.onRestart.bind(this, comp.componentId)}
+                onClick={this.onRestart.bind(this, comp.info.componentId)}
               >
                 Restart
               </button>

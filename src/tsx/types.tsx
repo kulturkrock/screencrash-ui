@@ -58,6 +58,11 @@ interface IComponentInfo {
   status: string;
 }
 
+interface IComponentState {
+  info: IComponentInfo;
+  state: { [index: string]: unknown };
+}
+
 interface IConnectionState {
   connected: boolean;
 }
@@ -81,6 +86,7 @@ export {
   EffectType,
   IEffectActionEvent,
   IComponentInfo,
+  IComponentState,
   IConnectionState,
   ILogMessage,
   IEmpty,
