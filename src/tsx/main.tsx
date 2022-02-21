@@ -32,7 +32,6 @@ class Main extends React.PureComponent<IEmpty, IState> {
     const queryParams = new URLSearchParams(window.location.search);
     const allowCommands = queryParams.get("mode") !== "safe";
     const showStatusContainer = queryParams.get("nostatus") === null;
-    console.log(showStatusContainer);
     return (
       <div className={style.gridContainer}>
         <div className={style.header}>
