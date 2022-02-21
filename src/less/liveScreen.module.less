@@ -8,10 +8,16 @@
     grid-template-columns: 20em 25em 1fr;
     column-gap: 1em;
 }
+.screen.noLeftContainer {
+    grid-template-columns: 1fr 2fr;
+}
 
 .leftContainer {
     height: 100%;
     overflow: hidden;
+}
+.leftContainer.hidden {
+    display: none;
 }
 
 .statusViewContainer {

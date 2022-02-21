@@ -26,6 +26,8 @@ const CHOICE_KEYS = ["z", "x", "c", "v", "b", "n", "m"];
 interface IProps {
   coreConnection: ICoreConnection;
   maxNofLogs: number;
+  allowCommands: boolean;
+  showStatusContainer: boolean;
 }
 interface IState {
   nodes: INodeCollection;
@@ -67,8 +69,16 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
     const currentNodeId = this.state.history[this.state.history.length - 1];
     const currentNode = this.state.nodes[currentNodeId];
     return (
-      <div className={style.screen}>
-        <div className={style.leftContainer}>
+      <div
+        className={`${style.screen} ${
+          this.props.showStatusContainer ? "" : style.noLeftContainer
+        }`}
+      >
+        <div
+          className={`${style.leftContainer} ${
+            this.props.showStatusContainer ? "" : style.hidden
+          }`}
+        >
           <div className={style.statusViewContainer}>
             <StatusView
               effects={this.state.effects}
@@ -157,7 +167,14 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
   private handleKey(event: KeyboardEvent) {
     // Only accept keyboard shortcuts on first press and when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
-      if (event.key === " ") {
+      if (event.key === "s") {
+        this.setState({ autoscrollScript: !this.state.autoscrollScript });
+      } else if (event.key === "a") {
+        this.setState({ showActionsOnNodes: !this.state.showActionsOnNodes });
+      } else if (!this.props.allowCommands) {
+        // Don't allow any other key press
+        return;
+      } else if (event.key === " ") {
         this.props.coreConnection.nextNode(true);
       } else if (event.key == "Up" || event.key == "ArrowUp") {
         this.props.coreConnection.prevNode();
@@ -165,10 +182,6 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         this.props.coreConnection.nextNode(false);
       } else if (event.key == "Enter") {
         this.props.coreConnection.runActions();
-      } else if (event.key === "s") {
-        this.setState({ autoscrollScript: !this.state.autoscrollScript });
-      } else if (event.key === "a") {
-        this.setState({ showActionsOnNodes: !this.state.showActionsOnNodes });
       } else if (CHOICE_KEYS.includes(event.key.toLowerCase())) {
         const choiceIndex = CHOICE_KEYS.indexOf(event.key.toLowerCase());
         const runActions = event.key !== event.key.toUpperCase();
