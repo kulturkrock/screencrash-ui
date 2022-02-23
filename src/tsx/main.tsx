@@ -29,10 +29,13 @@ class Main extends React.PureComponent<IEmpty, IState> {
   }
 
   public render() {
+    const queryParams = new URLSearchParams(window.location.search);
+    const allowCommands = queryParams.get("mode") !== "safe";
+    const showStatusContainer = queryParams.get("nostatus") === null;
     return (
       <div className={style.gridContainer}>
         <div className={style.header}>
-          <div>Mode: Live</div>
+          <div>Mode: Live {allowCommands ? "" : "[SAFE MODE]"}</div>
           <div>{this.state.isConnected ? "CONNECTED" : "CONNECTING..."}</div>
           <div>
             <form>
@@ -51,6 +54,8 @@ class Main extends React.PureComponent<IEmpty, IState> {
           <LiveScreen
             coreConnection={this.state.coreConnection}
             maxNofLogs={100}
+            allowCommands={allowCommands}
+            showStatusContainer={showStatusContainer}
           />
         </div>
       </div>
