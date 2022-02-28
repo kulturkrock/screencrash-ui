@@ -1,7 +1,9 @@
 import * as React from "react";
 
 import style from "../less/statusView.module.less";
+import { InventoryView } from "./components/inventory";
 import { ComponentView } from "./componentView";
+import { OnTheFlyAction } from "./coreMessages";
 import { EffectView } from "./effectView/effectView";
 import { LogView } from "./logView";
 import {
@@ -11,14 +13,23 @@ import {
   ILogMessage,
 } from "./types";
 
+interface ITab {
+  key: string;
+  name: string;
+  icon: JSX.Element;
+  count?: number;
+}
+
 const tabs = {
   effects: "effects",
   components: "components",
   logs: "log",
+  inventory: "inventory",
 };
 
 interface IProps {
   effects: IEffect[];
+  onOnTheFlyAction: (action: OnTheFlyAction) => void;
   onEffectAction: (event: IEffectActionEvent) => void;
   onComponentReset: (componentId: string) => void;
   onComponentRestart: (componentId: string) => void;
@@ -34,12 +45,16 @@ interface IPropsTab {
 
 interface IState {
   currentTab: string;
+  availableTabs: ITab[];
 }
 
 class StatusView extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { currentTab: tabs.effects };
+    this.state = {
+      currentTab: tabs.effects,
+      availableTabs: this.createAvailableTabs(),
+    };
 
     this.handleKey = this.handleKey.bind(this);
   }
@@ -52,36 +67,81 @@ class StatusView extends React.PureComponent<IProps, IState> {
     document.removeEventListener("keydown", this.handleKey);
   }
 
+  public componentDidUpdate(): void {
+    const newTabs = this.createAvailableTabs();
+    if (this.state.availableTabs.length === newTabs.length) {
+      const changedTabs = this.state.availableTabs.filter((tab, index) => {
+        return (
+          tab.key !== newTabs[index].key || tab.count !== newTabs[index].count
+        );
+      });
+      if (changedTabs.length === 0) {
+        // Avoid recursive updates without changes.
+        return;
+      }
+    }
+
+    this.setState({ availableTabs: newTabs });
+  }
+
+  public createAvailableTabs(): ITab[] {
+    const result: ITab[] = [
+      {
+        key: tabs.effects,
+        name: "Effects",
+        icon: <span className={style.shortName}>FX</span>,
+        count: this.props.effects.length,
+      },
+      {
+        key: tabs.components,
+        name: "Components",
+        icon: <span className={style.shortName}>COMP</span>,
+        count: this.props.components.length,
+      },
+      {
+        key: tabs.logs,
+        name: "Logs",
+        icon: <span className={style.shortName}>LOG</span>,
+        count: this.props.logMessages.length,
+      },
+    ];
+
+    if (
+      this.props.components.filter(
+        (comp) => comp.info.componentName === "inventory",
+      ).length !== 0
+    ) {
+      result.push({
+        key: tabs.inventory,
+        name: "Inventory",
+        icon: <span className={style.shortName}>INV</span>,
+      });
+    }
+
+    return result;
+  }
+
   public render(): JSX.Element {
     return (
       <div className={style.container}>
         <div className={style.tabBar}>
-          <div
-            className={`${style.tab} ${
-              this.state.currentTab == tabs.effects ? style.selected : ""
-            }`}
-            onClick={this.setTab.bind(this, tabs.effects)}
-          >
-            {this.getTabText("Effects", "FX", tabs.effects)}
-          </div>
-          <div
-            className={`${style.tab} ${
-              this.state.currentTab == tabs.components ? style.selected : ""
-            }`}
-            onClick={this.setTab.bind(this, tabs.components)}
-          >
-            {this.getTabText("Components", "COMP", tabs.components)} (
-            {this.props.components.length})
-          </div>
-          <div
-            className={`${style.tab} ${
-              this.state.currentTab == tabs.logs ? style.selected : ""
-            }`}
-            onClick={this.setTab.bind(this, tabs.logs)}
-          >
-            {this.getTabText("Logs", "LOG", tabs.logs)} (
-            {this.props.logMessages.length})
-          </div>
+          {this.state.availableTabs.map((tab) => (
+            <div
+              key={tab.key}
+              className={`${style.tab} ${
+                this.state.currentTab == tab.key ? style.selected : ""
+              }`}
+              onClick={this.setTab.bind(this, tab.key)}
+            >
+              {this.state.currentTab === tab.key ? (
+                tab.name + (tab.count !== undefined ? ` (${tab.count})` : "")
+              ) : (
+                <div>
+                  {tab.icon} {tab.count !== undefined ? `(${tab.count})` : ""}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
         <div className={style.tabContent}>
           <TabContent tabName={this.state.currentTab} props={this.props} />
@@ -94,28 +154,16 @@ class StatusView extends React.PureComponent<IProps, IState> {
     this.setState({ ...this.state, currentTab: tabName });
   }
 
-  private getTabText(
-    longName: string,
-    shortName: string,
-    tabName: string,
-  ): JSX.Element {
-    if (this.state.currentTab == tabName) {
-      return <span>{longName}</span>;
-    } else {
-      return <span className={style.shortName}>{shortName}</span>;
-    }
-  }
-
   private handleKey(event: KeyboardEvent) {
     // Only accept keyboard shortcuts when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
-      console.log(event.key);
-      if (event.key === "1") {
-        this.setTab(tabs.effects);
-      } else if (event.key === "2") {
-        this.setTab(tabs.components);
-      } else if (event.key === "3") {
-        this.setTab(tabs.logs);
+      const keyAsNum = event.key.charCodeAt(0) - "0".charCodeAt(0);
+      if (
+        keyAsNum >= 1 &&
+        keyAsNum <= 9 &&
+        keyAsNum - 1 < this.state.availableTabs.length
+      ) {
+        this.setTab(this.state.availableTabs[keyAsNum - 1].key);
       }
     }
   }
@@ -144,6 +192,20 @@ function TabContent(propsData: IPropsTab): JSX.Element {
         onClearMessages={propsData.props.onClearLogMessages}
       />
     );
+  } else if (propsData.tabName === tabs.inventory) {
+    const inventoryComponents = propsData.props.components.filter(
+      (comp) => comp.info.componentName === "inventory",
+    );
+    if (inventoryComponents.length > 0) {
+      return (
+        <InventoryView
+          inventory={inventoryComponents[0]}
+          onOnTheFlyAction={propsData.props.onOnTheFlyAction}
+        />
+      );
+    } else {
+      return <div>Error. Could not find any inventory</div>;
+    }
   }
   return null;
 }

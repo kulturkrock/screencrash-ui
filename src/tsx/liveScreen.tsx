@@ -82,6 +82,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
           <div className={style.statusViewContainer}>
             <StatusView
               effects={this.state.effects}
+              onOnTheFlyAction={this.props.coreConnection.runOnTheFlyAction}
               onEffectAction={this.handleEffectAction.bind(this)}
               onComponentReset={this.handleComponentReset.bind(this)}
               onComponentRestart={this.handleComponentRestart.bind(this)}

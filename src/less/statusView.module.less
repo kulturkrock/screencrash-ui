@@ -42,11 +42,17 @@
     line-height: 2em;
     vertical-align: middle;
     border-bottom: 1px solid wheat;
-    overflow-x: hidden; /* change to auto? */
+    overflow-x: auto;
     overflow-y: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+.tabBar::-webkit-scrollbar {
+    display: none; /* WebKit */
 }
 .tab {
     padding: 0em 1em;
+    white-space: nowrap;
     border-right: 1px solid wheat;
 }
 .tab:hover {
