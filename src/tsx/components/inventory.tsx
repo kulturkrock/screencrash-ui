@@ -32,6 +32,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
     const {
       configuration,
       money,
+      currency,
       itemCount,
       achievementsReached,
       achievementNames,
@@ -76,7 +77,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
                   {itemCount[item.name] || 0}
                 </span>{" "}
                 {item.description}{" "}
-                {item.cost !== 0 ? `(${item.cost} guld)` : ""}
+                {item.cost !== 0 ? `(${item.cost} ${currency})` : ""}
               </div>
               <button onClick={this.removeItem.bind(this, item.name)}>-</button>
               <button onClick={this.addItem.bind(this, item.name)}>+</button>
@@ -118,6 +119,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
   _prepareData(): {
     configuration: IConfiguration;
     money: number;
+    currency: string;
     itemCount: { [index: string]: number };
     achievementsReached: IAchievement[];
     achievementNames: string[];
@@ -137,6 +139,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
       .achievementsReached || []) as IAchievement[];
 
     const money = (this.props.inventory.state.money || 0) as number;
+    const currency = (this.props.inventory.state.currency || "money") as string;
     const itemCount: { [index: string]: number } = {};
     const items = (this.props.inventory.state.items || []) as string[];
     for (const item of items) {
@@ -149,6 +152,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
     return {
       configuration,
       money,
+      currency,
       itemCount,
       achievementsReached,
       achievementNames,
