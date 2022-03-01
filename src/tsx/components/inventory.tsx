@@ -124,7 +124,6 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
     achievementsReached: IAchievement[];
     achievementNames: string[];
   } {
-    console.log(this.props.inventory.state);
     const configuration = (this.props.inventory.state.configuration || {
       items: [],
       achievements: [],
