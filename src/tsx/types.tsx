@@ -15,6 +15,7 @@ interface INode {
   prompt: string;
   pdfPage: number;
   pdfLocationOnPage: number;
+  lineNumber: number | undefined;
 }
 
 interface INodeCollection {

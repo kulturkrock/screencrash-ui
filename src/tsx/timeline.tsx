@@ -172,6 +172,16 @@ class Timeline extends React.PureComponent<IProps, IState> {
             .attr("fill", ({ tense }) =>
               tense === "present" ? CURRENT_NODE_FILL : BACKGROUND_COLOR,
             );
+          g.append("foreignObject")
+            .attr("id", "lineNumber")
+            .attr("x", 0)
+            .attr("y", ({ y }) => y - NODE_SPACING / 2)
+            .attr("width", LEFT_MARGIN - NODE_RADIUS)
+            .attr("height", NODE_SPACING)
+            .append("xhtml:div")
+            .classed(style.lineNumber, true)
+            .text(({ lineNumber }) => lineNumber);
+
           const promptContainer = g
             .append("foreignObject")
             .attr("id", "prompt")
@@ -281,6 +291,11 @@ class Timeline extends React.PureComponent<IProps, IState> {
           update
             .selectAll(`.${style.promptAction}`)
             .classed(style.promptActionHidden, !this.props.showActions);
+          update
+            .select("#lineNumber")
+            .transition(transition)
+            .attr("x", 0)
+            .attr("y", ({ y }) => y - NODE_SPACING / 2);
 
           this.props.choiceKeys.forEach((key, i) => {
             update
