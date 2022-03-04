@@ -245,7 +245,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
     this.props.onOnTheFlyAction(action);
   }
 
-  setInventoryVisibility(visibility: boolean, entityId: string) {
+  setInventoryVisibility(visibility: boolean, entityId: string): void {
     const action: OnTheFlyAction = {
       messageType: "component-action",
       target_component: "web",
