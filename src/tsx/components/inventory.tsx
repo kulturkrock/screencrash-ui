@@ -33,6 +33,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
       configuration,
       money,
       currency,
+      itemsVisibility,
       itemCount,
       achievementsReached,
       achievementNames,
@@ -40,6 +41,23 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
 
     return (
       <div className={style.container}>
+        <div className={style.itemsSectionVisibility}>
+          <button
+            onClick={this.setItemsVisibility.bind(this, !itemsVisibility)}
+          >
+            {itemsVisibility ? "Hide items section" : "Show items section"}
+          </button>
+          <button
+            onClick={this.setInventoryVisibility.bind(this, true, "inventory")}
+          >
+            Show inventory
+          </button>
+          <button
+            onClick={this.setInventoryVisibility.bind(this, false, "inventory")}
+          >
+            Hide inventory
+          </button>
+        </div>
         {achievementsReached
           .filter((achievement) => !achievementNames.includes(achievement.name))
           .map((achievement) => (
@@ -120,6 +138,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
     configuration: IConfiguration;
     money: number;
     currency: string;
+    itemsVisibility: boolean;
     itemCount: { [index: string]: number };
     achievementsReached: IAchievement[];
     achievementNames: string[];
@@ -140,6 +159,8 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
 
     const money = (this.props.inventory.state.money || 0) as number;
     const currency = (this.props.inventory.state.currency || "money") as string;
+    const itemsVisibility = (this.props.inventory.state.items_visibility !==
+      false) as boolean;
     const itemCount: { [index: string]: number } = {};
     const items = (this.props.inventory.state.items || []) as string[];
     for (const item of items) {
@@ -153,6 +174,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
       configuration,
       money,
       currency,
+      itemsVisibility,
       itemCount,
       achievementsReached,
       achievementNames,
@@ -205,6 +227,32 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
       assets: [],
       params: {
         achievement: achievement,
+      },
+    };
+    this.props.onOnTheFlyAction(action);
+  }
+
+  setItemsVisibility(visibility: boolean): void {
+    const action: OnTheFlyAction = {
+      messageType: "component-action",
+      target_component: "inventory",
+      cmd: "set_items_visibility",
+      assets: [],
+      params: {
+        visible: visibility,
+      },
+    };
+    this.props.onOnTheFlyAction(action);
+  }
+
+  setInventoryVisibility(visibility: boolean, entityId: string): void {
+    const action: OnTheFlyAction = {
+      messageType: "component-action",
+      target_component: "web",
+      cmd: visibility ? "show" : "hide",
+      assets: [],
+      params: {
+        entityId: entityId,
       },
     };
     this.props.onOnTheFlyAction(action);
