@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node_modules\\.bin\\webpack",
-    "watch": "node_modules\\.bin\\webpack --watch",
-    "serve": "node_modules\\.bin\\browser-sync start --config browser-sync.config.js",
-    "dev": "node_modules\\.bin\\npm-run-all --parallel watch serve"
+    "build": "node_modules/.bin/webpack",
+    "watch": "node_modules/.bin/webpack --watch",
+    "serve": "node_modules/.bin/browser-sync start --config browser-sync.config.js",
+    "dev": "node_modules/.bin/npm-run-all --parallel watch serve"
   },
   "repository": {
     "type": "git",
