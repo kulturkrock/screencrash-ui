@@ -6,11 +6,13 @@ import { ComponentView } from "./componentView";
 import { OnTheFlyAction } from "./coreMessages";
 import { EffectView } from "./effectView/effectView";
 import { LogView } from "./logView";
+import { ShortcutView } from "./shortcutView";
 import {
   IComponentState,
   IEffect,
   IEffectActionEvent,
   ILogMessage,
+  IUIConfig,
 } from "./types";
 
 interface ITab {
@@ -25,11 +27,14 @@ const tabs = {
   components: "components",
   logs: "log",
   inventory: "inventory",
+  shortcuts: "shortcuts",
 };
 
 interface IProps {
+  uiConfig: IUIConfig;
   effects: IEffect[];
   onOnTheFlyAction: (action: OnTheFlyAction) => void;
+  onTriggerPredefinedActions: (actions: string[]) => void;
   onEffectAction: (event: IEffectActionEvent) => void;
   onComponentReset: (componentId: string) => void;
   onComponentRestart: (componentId: string) => void;
@@ -97,6 +102,11 @@ class StatusView extends React.PureComponent<IProps, IState> {
         name: "Components",
         icon: <span className={style.shortName}>COMP</span>,
         count: this.props.components.length,
+      },
+      {
+        key: tabs.shortcuts,
+        name: "Shortcuts",
+        icon: <span className={style.shortName}>SC</span>,
       },
       {
         key: tabs.logs,
@@ -190,6 +200,13 @@ function TabContent(propsData: IPropsTab): JSX.Element {
       <LogView
         logMessages={propsData.props.logMessages}
         onClearMessages={propsData.props.onClearLogMessages}
+      />
+    );
+  } else if (propsData.tabName === tabs.shortcuts) {
+    return (
+      <ShortcutView
+        shortcuts={propsData.props.uiConfig.shortcuts}
+        onTriggerPredefinedActions={propsData.props.onTriggerPredefinedActions}
       />
     );
   } else if (propsData.tabName === tabs.inventory) {

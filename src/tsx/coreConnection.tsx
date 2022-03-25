@@ -2,6 +2,7 @@ import {
   ComponentResetMessage,
   ComponentRestartMessage,
   OnTheFlyAction,
+  PredefinedActionsTrigger,
 } from "./coreMessages";
 import {
   INodeCollection,
@@ -10,6 +11,7 @@ import {
   IComponentState,
   IConnectionState,
   ILogMessage,
+  IUIConfig,
 } from "./types";
 
 const eventNames = {
@@ -21,6 +23,7 @@ const eventNames = {
   logAdded: "log-added",
   components: "components",
   connection: "connection",
+  uiconfig: "uiconfig",
 };
 
 /**
@@ -36,6 +39,7 @@ interface ICoreConnection extends EventTarget {
   runActions(): void;
   choosePath(choiceIndex: number, runActions: boolean): void;
   runOnTheFlyAction(action: OnTheFlyAction): void;
+  runPredefinedActions(actions: string[]): void;
   handleEffectAction(event: IEffectActionEvent): void;
   handleClearLogMessages(): void;
   handleComponentReset(componentId: string): void;
@@ -49,6 +53,10 @@ interface ICoreConnection extends EventTarget {
   addEventListener(
     event: "nodes",
     listener: (event: CustomEvent<INodeCollection>) => void,
+  ): void;
+  addEventListener(
+    event: "uiconfig",
+    listener: (event: CustomEvent<IUIConfig>) => void,
   ): void;
   addEventListener(
     event: "history",
@@ -87,6 +95,7 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
     super();
     this.address = address;
     this.runOnTheFlyAction = this.runOnTheFlyAction.bind(this);
+    this.runPredefinedActions = this.runPredefinedActions.bind(this);
   }
 
   private emitConnected(isConnected: boolean) {
@@ -123,6 +132,12 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
             }),
           );
           break;
+        case "uiconfig":
+          this.dispatchEvent(
+            new CustomEvent(eventNames.uiconfig, {
+              detail: data,
+            }),
+          );
         case "script":
           this.dispatchEvent(
             new CustomEvent(eventNames.script, { detail: data }),
@@ -249,6 +264,14 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
     if (action.cmd !== "" && action.cmd !== null) {
       this.socket.send(JSON.stringify(action));
     }
+  }
+
+  public runPredefinedActions(actions: string[]): void {
+    const msg: PredefinedActionsTrigger = {
+      messageType: "run-actions-by-id",
+      actions: actions,
+    };
+    this.socket.send(JSON.stringify(msg));
   }
 
   public handleClearLogMessages(): void {
