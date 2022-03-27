@@ -9,6 +9,7 @@ import {
   IEffectActionEvent,
   IComponentState,
   ILogMessage,
+  IUIConfig,
 } from "./types";
 
 import {
@@ -30,6 +31,7 @@ interface IProps {
   showStatusContainer: boolean;
 }
 interface IState {
+  uiconfig: IUIConfig;
   nodes: INodeCollection;
   history: string[];
   script: string;
@@ -44,6 +46,9 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
+      uiconfig: {
+        shortcuts: [],
+      },
       nodes: {},
       history: [],
       script: null,
@@ -81,8 +86,12 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         >
           <div className={style.statusViewContainer}>
             <StatusView
+              uiConfig={this.state.uiconfig}
               effects={this.state.effects}
               onOnTheFlyAction={this.props.coreConnection.runOnTheFlyAction}
+              onTriggerPredefinedActions={
+                this.props.coreConnection.runPredefinedActions
+              }
               onEffectAction={this.handleEffectAction.bind(this)}
               onComponentReset={this.handleComponentReset.bind(this)}
               onComponentRestart={this.handleComponentRestart.bind(this)}
@@ -117,6 +126,9 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
   }
 
   private initConnection() {
+    this.props.coreConnection.addEventListener("uiconfig", (event) => {
+      this.setState({ uiconfig: event.detail });
+    });
     this.props.coreConnection.addEventListener("nodes", (event) => {
       this.setState({ nodes: event.detail });
     });
@@ -168,25 +180,38 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
   private handleKey(event: KeyboardEvent) {
     // Only accept keyboard shortcuts on first press and when nothing is focused
     if (document.activeElement === document.body && !event.repeat) {
-      if (event.key === "s") {
+      let keyCombination = "";
+      if (event.altKey) keyCombination += "alt+";
+      if (event.ctrlKey) keyCombination += "ctrl+";
+      if (event.shiftKey) keyCombination += "shift+";
+      keyCombination += event.key;
+
+      if (keyCombination === "s") {
         this.setState({ autoscrollScript: !this.state.autoscrollScript });
-      } else if (event.key === "a") {
+      } else if (keyCombination === "a") {
         this.setState({ showActionsOnNodes: !this.state.showActionsOnNodes });
       } else if (!this.props.allowCommands) {
         // Don't allow any other key press
         return;
-      } else if (event.key === " ") {
+      } else if (keyCombination === " ") {
         this.props.coreConnection.nextNode(true);
-      } else if (event.key == "Up" || event.key == "ArrowUp") {
+      } else if (keyCombination == "Up" || keyCombination == "ArrowUp") {
         this.props.coreConnection.prevNode();
-      } else if (event.key == "Down" || event.key == "ArrowDown") {
+      } else if (keyCombination == "Down" || keyCombination == "ArrowDown") {
         this.props.coreConnection.nextNode(false);
-      } else if (event.key == "Enter") {
+      } else if (keyCombination == "Enter") {
         this.props.coreConnection.runActions();
-      } else if (CHOICE_KEYS.includes(event.key.toLowerCase())) {
-        const choiceIndex = CHOICE_KEYS.indexOf(event.key.toLowerCase());
-        const runActions = event.key !== event.key.toUpperCase();
+      } else if (CHOICE_KEYS.includes(keyCombination.toLowerCase())) {
+        const choiceIndex = CHOICE_KEYS.indexOf(keyCombination.toLowerCase());
+        const runActions = keyCombination !== keyCombination.toUpperCase();
         this.props.coreConnection.choosePath(choiceIndex, runActions);
+      }
+
+      for (const shortcut of this.state.uiconfig.shortcuts) {
+        if (shortcut.hotkey === keyCombination) {
+          this.props.coreConnection.runPredefinedActions(shortcut.actions);
+          event.preventDefault();
+        }
       }
     }
   }

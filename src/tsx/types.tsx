@@ -22,6 +22,16 @@ interface INodeCollection {
   [index: string]: INode;
 }
 
+interface IShortcut {
+  title: string;
+  hotkey: string | undefined;
+  actions: string[];
+}
+
+interface IUIConfig {
+  shortcuts: IShortcut[];
+}
+
 enum EffectType {
   Other,
   Audio,
@@ -83,6 +93,8 @@ export {
   IAction,
   INode,
   INodeCollection,
+  IShortcut,
+  IUIConfig,
   IEffect,
   EffectType,
   IEffectActionEvent,

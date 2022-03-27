@@ -1,3 +1,7 @@
+interface PredefinedActionsTrigger {
+  messageType: string;
+  actions: string[];
+}
 interface OnTheFlyAction {
   messageType: string;
   target_component: string;
@@ -14,4 +18,9 @@ interface ComponentRestartMessage {
   componentId: string;
 }
 
-export { OnTheFlyAction, ComponentResetMessage, ComponentRestartMessage };
+export {
+  PredefinedActionsTrigger,
+  OnTheFlyAction,
+  ComponentResetMessage,
+  ComponentRestartMessage,
+};
