@@ -88,6 +88,7 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
             <StatusView
               uiConfig={this.state.uiconfig}
               effects={this.state.effects}
+              nodes={this.state.nodes}
               onOnTheFlyAction={this.props.coreConnection.runOnTheFlyAction}
               onTriggerPredefinedActions={
                 this.props.coreConnection.runPredefinedActions
