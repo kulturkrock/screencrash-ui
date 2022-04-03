@@ -12,6 +12,7 @@ import {
   IEffect,
   IEffectActionEvent,
   ILogMessage,
+  INodeCollection,
   IUIConfig,
 } from "./types";
 
@@ -33,8 +34,13 @@ const tabs = {
 interface IProps {
   uiConfig: IUIConfig;
   effects: IEffect[];
+  nodes: INodeCollection;
   onOnTheFlyAction: (action: OnTheFlyAction) => void;
   onTriggerPredefinedActions: (actions: string[]) => void;
+  onSendUIMessage: (
+    messageType: string,
+    params: { [index: string]: unknown },
+  ) => void;
   onEffectAction: (event: IEffectActionEvent) => void;
   onComponentReset: (componentId: string) => void;
   onComponentRestart: (componentId: string) => void;
@@ -206,6 +212,8 @@ function TabContent(propsData: IPropsTab): JSX.Element {
     return (
       <ShortcutView
         shortcuts={propsData.props.uiConfig.shortcuts}
+        nodes={propsData.props.nodes}
+        onSendUIMessage={propsData.props.onSendUIMessage}
         onTriggerPredefinedActions={propsData.props.onTriggerPredefinedActions}
       />
     );
