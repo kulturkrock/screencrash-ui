@@ -36,6 +36,10 @@ interface ICoreConnection extends EventTarget {
   handshake(): void;
   prevNode(): void;
   nextNode(runActions: boolean): void;
+  sendUICommand(
+    messageType: string,
+    params: { [index: string]: unknown },
+  ): void;
   runActions(): void;
   choosePath(choiceIndex: number, runActions: boolean): void;
   runOnTheFlyAction(action: OnTheFlyAction): void;
@@ -96,6 +100,7 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
     this.address = address;
     this.runOnTheFlyAction = this.runOnTheFlyAction.bind(this);
     this.runPredefinedActions = this.runPredefinedActions.bind(this);
+    this.sendUICommand = this.sendUICommand.bind(this);
   }
 
   private emitConnected(isConnected: boolean) {
@@ -184,6 +189,13 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
 
   public nextNode(runActions: boolean): void {
     this.socket.send(JSON.stringify({ messageType: "next-node", runActions }));
+  }
+
+  public sendUICommand(
+    messageType: string,
+    params: { [index: string]: unknown },
+  ): void {
+    this.socket.send(JSON.stringify({ messageType, ...params }));
   }
 
   public runActions(): void {

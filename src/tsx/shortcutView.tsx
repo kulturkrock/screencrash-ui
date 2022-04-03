@@ -2,14 +2,16 @@ import * as React from "react";
 import { INodeCollection } from "types";
 
 import style from "../less/shortcutView.module.less";
-import { OnTheFlyAction } from "./coreMessages";
 import { IShortcut } from "./types";
 
 interface IProps {
   shortcuts: IShortcut[];
   nodes: INodeCollection;
   onTriggerPredefinedActions: (actions: string[]) => void;
-  onOnTheFlyAction: (action: OnTheFlyAction) => void;
+  onSendUIMessage: (
+    messageType: string,
+    params: { [index: string]: unknown },
+  ) => void;
 }
 
 interface IState {
@@ -65,16 +67,7 @@ class ShortcutView extends React.PureComponent<IProps, IState> {
   }
 
   private gotoNode() {
-    const action: OnTheFlyAction = {
-      messageType: "component-action",
-      target_component: "internal",
-      cmd: "goto-node",
-      assets: [],
-      params: {
-        node: this.state.selectedNode,
-      },
-    };
-    this.props.onOnTheFlyAction(action);
+    this.props.onSendUIMessage("goto-node", { node: this.state.selectedNode });
   }
 
   private triggerActions(actions: string[]): void {
