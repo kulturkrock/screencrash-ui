@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IEmpty, INode, INodeCollection } from "types";
+import { INodeCollection } from "types";
 
 import style from "../less/shortcutView.module.less";
 import { OnTheFlyAction } from "./coreMessages";
