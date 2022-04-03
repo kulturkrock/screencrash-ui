@@ -195,7 +195,7 @@ class Timeline extends React.PureComponent<IProps, IState> {
           promptContainer
             .append("xhtml:div")
             .classed(style.promptText, true)
-            .text(({ prompt }) => prompt);
+            .html(({ prompt }) => boldBetweenBrackets(prompt));
           promptContainer
             .selectAll(`.${style.promptAction}`)
             .data(({ actions }) => actions)
@@ -354,6 +354,12 @@ function getActionText(action: IAction): string {
   } else {
     return `${action.target}:${action.cmd}`;
   }
+}
+
+function boldBetweenBrackets(text: string): string {
+  return text
+    .replace("[", '<span style="font-weight:bold;">[')
+    .replace("]", "]</span>");
 }
 
 export { Timeline };
