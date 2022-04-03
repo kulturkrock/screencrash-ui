@@ -179,7 +179,10 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
 
   private handleKey(event: KeyboardEvent) {
     // Only accept keyboard shortcuts on first press and when nothing is focused
-    if (document.activeElement === document.body && !event.repeat) {
+    if (
+      !(document.activeElement instanceof HTMLInputElement) &&
+      !event.repeat
+    ) {
       let keyCombination = "";
       if (event.altKey) keyCombination += "alt+";
       if (event.ctrlKey) keyCombination += "ctrl+";
@@ -194,12 +197,16 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
         // Don't allow any other key press
         return;
       } else if (keyCombination === " ") {
+        event.preventDefault();
         this.props.coreConnection.nextNode(true);
       } else if (keyCombination == "Up" || keyCombination == "ArrowUp") {
+        event.preventDefault();
         this.props.coreConnection.prevNode();
       } else if (keyCombination == "Down" || keyCombination == "ArrowDown") {
+        event.preventDefault();
         this.props.coreConnection.nextNode(false);
       } else if (keyCombination == "Enter") {
+        event.preventDefault();
         this.props.coreConnection.runActions();
       } else if (CHOICE_KEYS.includes(keyCombination.toLowerCase())) {
         const choiceIndex = CHOICE_KEYS.indexOf(keyCombination.toLowerCase());
