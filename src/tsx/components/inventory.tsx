@@ -119,7 +119,11 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
               </div>
               {achievementNames.includes(achievement.name) &&
               !achievement.reuse ? (
-                ""
+                <button
+                  onClick={this.undoAchievement.bind(this, achievement.name)}
+                >
+                  Undo
+                </button>
               ) : (
                 <button
                   onClick={this.enableAchievement.bind(this, achievement.name)}
@@ -224,6 +228,19 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
       messageType: "component-action",
       target_component: "inventory",
       cmd: "enable_achievement",
+      assets: [],
+      params: {
+        achievement: achievement,
+      },
+    };
+    this.props.onOnTheFlyAction(action);
+  }
+
+  undoAchievement(achievement: string): void {
+    const action: OnTheFlyAction = {
+      messageType: "component-action",
+      target_component: "inventory",
+      cmd: "undo_achievement",
       assets: [],
       params: {
         achievement: achievement,
