@@ -250,6 +250,18 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
   }
 
   setItemsVisibility(visibility: boolean): void {
+    if (!visibility) {
+      // Hide item animations before hiding items section
+      const action: OnTheFlyAction = {
+        messageType: "component-action",
+        target_component: "inventory",
+        cmd: "clear_item_animations",
+        assets: [],
+        params: {},
+      };
+      this.props.onOnTheFlyAction(action);
+    }
+
     const action: OnTheFlyAction = {
       messageType: "component-action",
       target_component: "inventory",
