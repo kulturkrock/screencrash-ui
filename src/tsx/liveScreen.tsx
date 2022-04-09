@@ -210,9 +210,9 @@ class LiveScreen extends React.PureComponent<IProps, IState> {
       } else if (keyCombination == "Enter") {
         event.preventDefault();
         this.props.coreConnection.runActions();
-      } else if (CHOICE_KEYS.includes(keyCombination.toLowerCase())) {
-        const choiceIndex = CHOICE_KEYS.indexOf(keyCombination.toLowerCase());
-        const runActions = keyCombination !== keyCombination.toUpperCase();
+      } else if (CHOICE_KEYS.includes(event.key.toLowerCase())) {
+        const choiceIndex = CHOICE_KEYS.indexOf(event.key.toLowerCase());
+        const runActions = event.key !== event.key.toUpperCase();
         this.props.coreConnection.choosePath(choiceIndex, runActions);
       }
 

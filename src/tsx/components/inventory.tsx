@@ -95,7 +95,7 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
                   {itemCount[item.name] || 0}
                 </span>{" "}
                 {item.description}{" "}
-                {item.cost !== 0 ? `(${item.cost} ${currency})` : ""}
+                {item.cost !== 0 ? `(${item.cost} ${currency[0]})` : ""}
               </div>
               <button onClick={this.removeItem.bind(this, item.name)}>-</button>
               <button onClick={this.addItem.bind(this, item.name)}>+</button>
