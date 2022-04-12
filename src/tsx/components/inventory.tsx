@@ -88,51 +88,66 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
         </div>
         <div className={style.items}>
           <div className={style.header}>Items</div>
-          {configuration.items.map((item) => (
-            <div key={item.name} className={style.item}>
-              <div>
-                <span className={style.itemCount}>
-                  {itemCount[item.name] || 0}
-                </span>{" "}
-                {item.description}{" "}
-                {item.cost !== 0 ? `(${item.cost} ${currency})` : ""}
-              </div>
-              <button onClick={this.removeItem.bind(this, item.name)}>-</button>
-              <button onClick={this.addItem.bind(this, item.name)}>+</button>
-              {item.cost != 0 ? (
-                <button onClick={this.buyItem.bind(this, item.name)}>
-                  Buy
+          {configuration.items
+            .slice()
+            .sort((a, b) => a.description.localeCompare(b.description))
+            .map((item) => (
+              <div key={item.name} className={style.item}>
+                <div>
+                  <span className={style.itemCount}>
+                    {itemCount[item.name] || 0}
+                  </span>{" "}
+                  {item.description}{" "}
+                  {item.cost !== 0 ? `(${item.cost} ${currency})` : ""}
+                </div>
+                <button onClick={this.removeItem.bind(this, item.name)}>
+                  -
                 </button>
-              ) : (
-                ""
-              )}
-            </div>
-          ))}
+                <button onClick={this.addItem.bind(this, item.name)}>+</button>
+                {item.cost != 0 ? (
+                  <button onClick={this.buyItem.bind(this, item.name)}>
+                    Buy
+                  </button>
+                ) : (
+                  ""
+                )}
+              </div>
+            ))}
         </div>
         <div className={style.achievements}>
           <div className={style.header}>Achievements</div>
-          {configuration.achievements.map((achievement) => (
-            <div key={achievement.name} className={style.achievement}>
-              <div className={style.achievementInfo}>
-                <div className={style.achievementName}>{achievement.title}</div>
-                <div className={style.achievementDesc}>{achievement.desc}</div>
+          {configuration.achievements
+            .slice()
+            .sort((a, b) => a.title.localeCompare(b.title))
+            .map((achievement) => (
+              <div key={achievement.name} className={style.achievement}>
+                <div className={style.achievementInfo}>
+                  <div className={style.achievementName}>
+                    {achievement.title}
+                  </div>
+                  <div className={style.achievementDesc}>
+                    {achievement.desc}
+                  </div>
+                </div>
+                {achievementNames.includes(achievement.name) &&
+                !achievement.reuse ? (
+                  <button
+                    onClick={this.undoAchievement.bind(this, achievement.name)}
+                  >
+                    Undo
+                  </button>
+                ) : (
+                  <button
+                    onClick={this.enableAchievement.bind(
+                      this,
+                      achievement.name,
+                    )}
+                  >
+                    Enable
+                  </button>
+                )}
               </div>
-              {achievementNames.includes(achievement.name) &&
-              !achievement.reuse ? (
-                <button
-                  onClick={this.undoAchievement.bind(this, achievement.name)}
-                >
-                  Undo
-                </button>
-              ) : (
-                <button
-                  onClick={this.enableAchievement.bind(this, achievement.name)}
-                >
-                  Enable
-                </button>
-              )}
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     );
