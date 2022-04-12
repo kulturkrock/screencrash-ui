@@ -35,14 +35,16 @@ class ShortcutView extends React.PureComponent<IProps, IState> {
             id="nodeSelector"
             onChange={(e) => this.setState({ selectedNode: e.target.value })}
           >
-            {Object.keys(this.props.nodes).map((nodeKey: string) => (
-              <option key={nodeKey} value={nodeKey}>
-                {`${nodeKey}. ${this.props.nodes[nodeKey].prompt.substring(
-                  0,
-                  25 - nodeKey.length,
-                )}`}
-              </option>
-            ))}
+            {Object.entries(this.props.nodes)
+              .sort((a, b) => a[1].lineNumber - b[1].lineNumber)
+              .map(([nodeKey]) => (
+                <option key={nodeKey} value={nodeKey}>
+                  {`${nodeKey}. ${this.props.nodes[nodeKey].prompt.substring(
+                    0,
+                    25 - nodeKey.length,
+                  )}`}
+                </option>
+              ))}
           </select>
           <button
             onClick={this.gotoNode.bind(this)}

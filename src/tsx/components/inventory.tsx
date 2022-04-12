@@ -152,11 +152,12 @@ class InventoryView extends React.PureComponent<IProps, IEmpty> {
       achievements: [],
     }) as IConfiguration;
 
-    configuration.items.sort((item1, item2) => {
-      if (item1.cost !== 0 && item2.cost === 0) return -1;
-      else if (item1.cost === 0 && item2.cost !== 0) return 1;
-      return item1.description.localeCompare(item2.description);
-    });
+    configuration.items.sort((item1, item2) =>
+      item1.description.localeCompare(item2.description),
+    );
+    configuration.achievements.sort((item1, item2) =>
+      item1.title.localeCompare(item2.title),
+    );
 
     const achievementsReached = (this.props.inventory.state
       .achievementsReached || []) as IAchievement[];
