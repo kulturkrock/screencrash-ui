@@ -231,7 +231,8 @@ class RealCoreConnection extends EventTarget implements ICoreConnection {
         message.params["entityId"] = event.entityId;
         break;
       case "toggle_loop":
-        console.log("TODO: Toggle loop");
+        message.cmd = "toggle_loop";
+        message.params["entityId"] = event.entityId;
         break;
       case "toggle_mute":
         message.cmd = "toggle_mute";
