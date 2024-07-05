@@ -1,5 +1,7 @@
 # screencrash-ui
 
+> **Deprecated:** The code now lives in the [Screencrash repo](https://github.com/kulturkrock/screencrash)
+
 Repository for the UI of Screencrash (also known as Skärmkrock)
 
 - [screencrash-ui](#screencrash-ui)
